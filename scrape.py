@@ -8,7 +8,43 @@ import base64
 
 
 class Scraper():
-    def __init__(self, base_url, url_limit: int, fb_con, url_set: set = None):
+    """
+    Web scraper designed to crawl sub-paths, index keywords, and store data in a database.
+
+    Args:
+        base_url (str): The starting point for the web crawl.
+        url_limit (int, optional): Maximum number of URLs to explore. Defaults to None (no limit).
+        fb_con: An instance of a Firebase connection object.
+        url_set (set, optional): Set containing discovered URLs. Defaults to None (empty set).
+
+    Attributes:
+        base_url (str): The base URL for crawling.
+        url_limit (int): Maximum number of URLs to explore.
+        url_set (set): Set containing discovered URLs.
+        fb_con: Firebase connection object.
+        word_dict (dict): Dictionary mapping keywords to sub-dictionaries of base64 encoded URLs and their word frequencies.
+
+    Methods:
+        fetch_page(url: str) -> Optional[BeautifulSoup]:
+            Downloads and parses HTML content from a URL. Returns BeautifulSoup object or None on failure.
+
+        check_url_limit_exceeded(self) -> bool:
+            Checks if the URL limit has been reached.
+
+        get_sub_paths(self, url: str):
+            Performs depth-first search, extracting and adding valid sub-paths within the base URL domain to the url_set. Stops if URL limit is reached.
+
+        build_word_dict(self):
+            Iterates through URLs, extracts keywords using index_words (external function), and builds word_dict with word frequencies for each URL. Sorts URL entries within each word sub-dictionary by frequency.
+
+        push_to_db(self):
+            Pushes keyword-URL associations with frequencies to a Firebase database using the provided fb_con object and database_node path.
+
+        run(self):
+            Executes the entire scraping process by calling get_sub_paths, build_word_dict, and push_to_db methods sequentially.
+
+    """
+    def __init__(self, base_url, fb_con, url_limit: int = None, url_set: set = None):
         self.base_url = base_url
         self.url_limit = url_limit
         self.url_set = url_set if url_set else set()
@@ -16,6 +52,15 @@ class Scraper():
         self.word_dict = {}
 
     def fetch_page(self, url: str):
+        """
+        Downloads and parses HTML content from a URL using requests and BeautifulSoup.
+
+        Args:
+            url (str): The URL to fetch.
+
+        Returns:
+            Optional[BeautifulSoup]: The parsed BeautifulSoup object or None on failure.
+        """
         response = requests.get(url)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -24,22 +69,23 @@ class Scraper():
             return None
 
     def check_url_limit_exceeded(self):
+        """
+        Checks if the URL limit has been reached.
+
+        Returns:
+            bool: True if URL limit is reached, False otherwise.
+        """
         if self.url_limit is not None and len(self.url_set) >= self.url_limit:
             return True
 
         return False
 
     def get_sub_paths(self, url: str):
-        # pseudo code #
         """
-        define mutable set call url_set = set()
-        start recursive call from main page and generate a list of nvidia paths.
-        iterate through sub-paths, for each sub-path:
-        if in set:
-            pass
-        else:
-            add it to set
-            call the recursive function on it
+        Performs a depth-first search starting from the given URL, extracting and adding valid sub-paths within the base URL domain to the url_set. Stops if URL limit is reached.
+
+        Args:
+            url (str): The starting URL for the sub-path search.
         """
         # Add current URL if soup was not None
         self.url_set.add(url)
@@ -69,6 +115,11 @@ class Scraper():
                 self.get_sub_paths(discovered_url)
 
     def build_word_dict(self):
+        """
+        Iterates through collected URLs, extracts keywords using index_words (external function), and builds the word_dict by storing word frequencies for each discovered URL. 
+        Sorts URL entries within each word sub-dictionary by frequency in descending order.
+        Important note - word_dict that is being build with the url encoded with base64 encoding - for integrating with firebase limitations
+        """
         # organize the data in the self.word_dict dictionary
         for url in self.url_set:
             soup = self.fetch_page(url)
@@ -86,14 +137,21 @@ class Scraper():
             self.word_dict[word] = dict(sorted_urls)
 
     def push_to_db(self):
+        """
+        Pushes keyword-URL associations with frequencies to a Firebase database using the provided fb_con object and database_node path.
+        This method assumes the existence of a `FBconn` class with a `post` method that accepts a database node path and data to push.
+
+        Raises:
+            Exception: If an error occurs during the database push operation.
+        """
         database_node = '/test'
-        # data = { 'world': {'DocsIDs': {'https://www.nvidia.com/en-us/': 12}}} - this is invalid
         data = { word: { 'DocsIDs': url_dict } for word, url_dict in self.word_dict.items() }
-        # key = 'word'
-        # data = { key: { 'DocsIDs': {'url1': 5, 'url2': 6} } } 
-        result = FBconn.post(database_node, data)
+        FBconn.post(database_node, data)
 
     def run(self):
+        """
+        Executes the entire scraping process by calling get_sub_paths, build_word_dict, and push_to_db methods sequentially.
+        """
         self.get_sub_paths(self.base_url)
         self.build_word_dict()
         self.push_to_db()
@@ -115,9 +173,6 @@ if __name__ == '__main__':
     FBconn = firebase.FirebaseApplication(
         'https://class-presentation-79426-default-rtdb.europe-west1.firebasedatabase.app/', None)
 
-    scraper = Scraper(base_url, args.url_limit, FBconn)
+    scraper = Scraper(base_url=base_url, fb_con=FBconn, url_limit=args.url_limit)
     scraper.run()
 
-    # with open('urls.txt', 'w') as file:
-    #     for url in url_set:
-    #         file.write(f"{url},")

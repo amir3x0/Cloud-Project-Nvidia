@@ -1,0 +1,273 @@
+:root {
+  --background-color: #e6e6e6; /* Slightly less bright */
+  --text-color: #333;
+  --navbar-background-color: #333;
+  --navbar-text-color: #fff;
+  --button-background-color: #76b900;
+  --button-text-color: #fff;
+  --container-background-color: #fff;
+  --link-color: #0000ee;
+  --border-color: #ddd;
+  --dropdown-background-color: #f9f9f9;
+  --dropdown-text-color: #333;
+}
+.dark-theme {
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --navbar-background-color: #333333;
+  --navbar-text-color: #ffffff;
+  --button-background-color: #76b900;
+  --button-text-color: #ffffff;
+  --container-background-color: #333;
+  --link-color: #bb86fc;
+  --border-color: #333;
+  --dropdown-background-color: #2c2c2c;
+  --dropdown-text-color: #ccc;
+}
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  justify-content: center;
+}
+.wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+.navbar,
+.search-container,
+.container {
+  background-color: var(--container-background-color);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--navbar-background-color);
+  color: var(--navbar-text-color);
+  padding: 10px 50px;
+}
+.navbar .logo i {
+  margin-right: 10px;
+  color: var(--button-background-color);
+}
+.navbar .nav-links a,
+.theme-toggle {
+  color: var(--navbar-text-color);
+  text-decoration: none;
+  margin-left: 20px;
+  cursor: pointer;
+}
+.search-container,
+.container {
+  text-align: center;
+  background-color: var(--container-background-color);
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  width: 93.4%;
+  display: none;
+}
+.search-box,
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+.search-button,
+.btn {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.search-button:hover,
+.btn:hover {
+  background-color: #5a8e00;
+}
+.active {
+  display: block;
+}
+.search-results {
+  text-align: left;
+  max-width: 100%;
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--container-background-color);
+}
+.search-results a {
+  display: block;
+  color: var(--link-color);
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+  text-decoration: none;
+  margin-bottom: 5px;
+}
+.search-results a:hover {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+}
+.result-title {
+  font-weight: bold;
+}
+.no-results {
+  color: var(--text-color);
+}
+
+.navbar .nav-links a,
+.navbar .nav-links .dropbtn,
+.theme-toggle {
+  color: var(--navbar-text-color);
+  text-decoration: none;
+  margin-left: 30px; /* Increased space between each item */
+  font-weight: bold; /* Make text bold */
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* Cool animation effect for hover */
+.navbar .nav-links a::after,
+.navbar .nav-links .dropbtn::after,
+.theme-toggle::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  display: block;
+  margin-top: 5px;
+  right: 0;
+  background: var(--button-background-color);
+  transition: width 0.3s ease;
+  transition-duration: 0.3s;
+  bottom: -5px;
+}
+
+.navbar .nav-links a:hover::after,
+.navbar .nav-links .dropbtn:hover::after,
+.theme-toggle:hover::after {
+  width: 100%;
+  left: 0;
+  background: var(--button-background-color);
+}
+
+.navbar .nav-links a:hover,
+.navbar .nav-links .dropbtn:hover,
+.theme-toggle:hover {
+  color: var(--button-background-color);
+}
+
+/* Additional styles for dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--dropdown-background-color);
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  z-index: 1;
+  border-radius: 5px;
+}
+.dropdown-content a {
+  color: var(--dropdown-text-color);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.2s ease-in-out;
+}
+.dropdown-content a:last-child {
+  border-bottom: none;
+}
+.dropdown-content a:hover {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+/*End of dropdown*/
+
+/* Styles for the admin page */
+.editIndexPage-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  margin-top: 20px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+table,
+th,
+td {
+  border: 1px solid var(--border-color);
+  text-align: left;
+  padding: 8px;
+}
+th {
+  background-color: var(--navbar-background-color);
+  color: var(--navbar-text-color);
+}
+tr:nth-child(even) {
+  background-color: var(--background-color);
+}
+a {
+  color: var(--link-color);
+}
+.btn {
+  background-color: #76b900; /* Nvidia green */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.btn:hover {
+  background-color: #5a8e00;
+}
+.btn-small {
+  padding: 2px 5px;
+  font-size: 0.8rem;
+}
+.input-field {
+  padding: 8px;
+  margin: 5px 0;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.form-container {
+  margin-bottom: 20px;
+}
+/* End admin page styles */

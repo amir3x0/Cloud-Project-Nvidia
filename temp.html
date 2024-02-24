@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nvidia Search Engine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
+    <script>
+      var firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID",
+        measurementId: "YOUR_MEASUREMENT_ID"
+      };
+      firebase.initializeApp(firebaseConfig);
+      var db = firebase.firestore();
+    </script>
+    <style>
+        :root {
+            --background-color: #e6e6e6; /* Slightly less bright */
+            --text-color: #333;
+            --navbar-background-color: #333;
+            --navbar-text-color: #fff;
+            --button-background-color: #76b900;
+            --button-text-color: #fff;
+            --container-background-color: #fff;
+            --link-color: #0000EE;
+            --border-color: #ddd;
+            --dropdown-background-color: #f9f9f9;
+            --dropdown-text-color: #333;
+        }
+        .dark-theme {
+            --background-color: #121212;
+            --text-color: #E0E0E0;
+            --navbar-background-color: #333333;
+            --navbar-text-color: #FFFFFF;
+            --button-background-color: #76b900;
+            --button-text-color: #FFFFFF;
+            --container-background-color: #333;
+            --link-color: #BB86FC;
+            --border-color: #333;
+            --dropdown-background-color: #2c2c2c;
+            --dropdown-text-color: #ccc;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            justify-content: center;
+        }
+        .wrapper {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+        .navbar, .search-container, .container {
+            background-color: var(--container-background-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--navbar-background-color);
+            color: var(--navbar-text-color);
+            padding: 10px 50px;
+        }
+        .navbar .logo i {
+            margin-right: 10px;
+            color: var(--button-background-color);
+        }
+        .navbar .nav-links a, .theme-toggle {
+            color: var(--navbar-text-color);
+            text-decoration: none;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+        .search-container, .container {
+            text-align: center;
+            background-color: var(--container-background-color);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            width: 93.4%;
+            display: none;
+        }
+        .search-box, .input-field {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .search-button, .btn {
+            background-color: var(--button-background-color);
+            color: var(--button-text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-button:hover, .btn:hover {
+            background-color: #5a8e00;
+        }
+        .active {
+            display: block;
+        }
+        .search-results {
+            text-align: left;
+            max-width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: var(--container-background-color);
+        }
+        .search-results a {
+            display: block;
+            color: var(--link-color);
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease-in-out;
+            text-decoration: none;
+            margin-bottom: 5px;
+        }
+        .search-results a:hover {
+            background-color: var(--button-background-color);
+            color: var(--button-text-color);
+        }
+        .result-title {
+            font-weight: bold;
+        }
+        .no-results {
+            color: var(--text-color);
+        }
+        
+        
+        .navbar .nav-links a, .navbar .nav-links .dropbtn, .theme-toggle {
+            color: var(--navbar-text-color);
+            text-decoration: none;
+            margin-left: 30px; /* Increased space between each item */
+            font-weight: bold; /* Make text bold */
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        /* Cool animation effect for hover */
+        .navbar .nav-links a::after, .navbar .nav-links .dropbtn::after, .theme-toggle::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            display: block;
+            margin-top: 5px;
+            right: 0;
+            background: var(--button-background-color);
+            transition: width 0.3s ease;
+            transition-duration: 0.3s;
+            bottom: -5px;
+        }
+        
+        .navbar .nav-links a:hover::after, .navbar .nav-links .dropbtn:hover::after, .theme-toggle:hover::after {
+            width: 100%;
+            left: 0;
+            background: var(--button-background-color);
+        }
+        
+        .navbar .nav-links a:hover, .navbar .nav-links .dropbtn:hover, .theme-toggle:hover {
+            color: var(--button-background-color);
+        }
+        
+        /* Additional styles for dropdown */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--dropdown-background-color);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            z-index: 1;
+            border-radius: 5px;
+        }
+        :root .dropdown-content a {
+            color: black; /* Set the default color for light mode */
+        }
+
+        .dark-theme .dropdown-content a {
+            color: white; /* Set the color for dark mode */
+        }
+        .dropdown-content a {
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        .dropdown-content a:hover {
+            color: var(--button-text-color);
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        /*End of dropdown*/
+        
+        /* Styles for the admin page */
+        .editIndexPage-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid var(--border-color);
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: var(--navbar-background-color);
+            color: var(--navbar-text-color);
+        }
+        tr:nth-child(even) {
+            background-color: var(--background-color);
+        }
+        a {
+            color: var(--link-color);
+        }
+        .btn {
+            background-color: #76b900; /* Nvidia green */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #5a8e00;
+        }
+        .btn-small {
+            padding: 2px 5px;
+            font-size: 0.8rem;
+        }
+        .input-field {
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        /* End admin page styles */
+        
+        /* Styles for the footer */
+        .footer {
+            background-color: var(--navbar-background-color);
+            color: var(--navbar-text-color);
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-top: 64px; /* Additional margin at the top */
+        }
+        .footer-options button {
+            background-color: var(--button-background-color);
+            color: var(--button-text-color);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .footer-options button:hover {
+            background-color: #5a8e00;
+        }
+        .copyright {
+            text-align: left; /* Align the copyright text to the left */
+            flex-grow: 1;
+            margin-right: 20px; /* Add some margin to separate it from the buttons */
+        }
+
+        .stats-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: var(--container-background-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .stats-list p {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            width: 80%;
+            text-align: center;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .stats-header {
+            color: var(--text-color)
+        }
+        /* Enhance the visual cue for the term with the most links */
+        #termMostLinks {
+            font-weight: bold;
+            background-color: var(--button-background-color);
+            color: var(--container-background-color);
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="wrapper">
+        <div class="navbar">
+            <div class="logo">
+                <i class="fas fa-microchip"></i>
+                <span>Nvidia Search Engine</span>
+            </div>
+            <div class="nav-links">
+                <a  onclick="switchPage('searchPage')">Search</a>
+                <div class="dropdown">
+                    <span class="dropbtn">Index</span>
+                    <div class="dropdown-content">
+                        <a  onclick="switchPage('addIndexPage')">Add New Index</a>
+                        <a  onclick="switchPage('editIndexPage')">Edit Index</a>
+                    </div>
+                </div>
+                <a  onclick="switchPage('statisticsPage')">Statistics</a>
+                <span class="theme-toggle" onclick="toggleTheme()">Toggle Theme</span>
+            </div>
+        </div>
+
+    <div id="searchPage" class="search-container active">
+        <input type="text" id="searchQuery" class="search-box" placeholder="Search Nvidia products, news, or information...">
+        <button onclick="search()" class="search-button">Search</button>
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <div id="editIndexPage" class="container">
+        <h2>Edit Index</h2>
+        <div class="form-container">
+            <input type="text" id="editTerm" class="input-field" placeholder="Existing term">
+            <input type="text" id="editdocIds" class="input-field" placeholder="DocIDs (comma-separated)">
+            <button class="btn" onclick="editTerm()">Edit Term</button>
+        </div>
+        <h2 id="editMessage"> </h2>
+    </div>
+
+    <div id="addIndexPage" class="container">
+        <h2>Add term</h2>
+        <div class="form-container">
+            <input type="text" id="newTerm" class="input-field" placeholder="New term">
+            <input type="text" id="docIds" class="input-field" placeholder="DocIDs (comma-separated)">
+            <button class="btn" onclick="addTerm()">Add Term</button>
+        </div>
+       <h2 id="addMessage"> </h2>
+        </table>
+    </div>
+
+    <div id="statisticsPage" class="container">
+        <h2 class="stats-header">Index Statistics</h2>
+        <div class="stats-list">
+            <p id="totalTerms">Total Terms: Calculating...</p>
+            <p id="termMostLinks">Term with Most Links: Calculating...</p>
+            <p id="totalLinks">Total Links: Calculating...</p>
+            <p id="avgLinksPerTerm">Average Links per Term: Calculating...</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="copyright">
+            <br>&copy; Braude's Nvidia Search Engine. All rights reserved.</p>
+        </div>
+        <div class="footer-options">
+            <button onclick="changeFontSize('increase')">Increase Font Size</button>
+            <button onclick="changeFontSize('decrease')">Decrease Font Size</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    fakeDatabase = {
+        "GPU": ["https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/", "https://www.nvidia.com/en-us/geforce/", "https://www.nvidia.com/en-us/gpu-cloud/"],
+        "AI": ["https://www.nvidia.com/en-us/deep-learning-ai/", "https://www.nvidia.com/en-us/omniverse/"],
+        "Driver": ["https://www.nvidia.com/en-us/drivers/", "https://www.nvidia.com/Download/index.aspx"],
+        "Technology": ["https://www.nvidia.com/en-us/", "https://www.nvidia.com/en-us/technologies/", "https://www.nvidia.com/en-us/industries/"],
+        "RTX": ["https://www.nvidia.com/en-us/geforce/rtx/"]
+    };
+
+    function search() {
+        const query = document.getElementById('searchQuery').value.trim().toLowerCase();
+        const resultsContainer = document.getElementById('searchResults');
+        resultsContainer.innerHTML = '';
+        
+        let foundResults = false;
+        Object.keys(fakeDatabase).forEach((term) => {
+            if (term.toLowerCase().includes(query)) {
+                foundResults = true;
+                fakeDatabase[term].forEach((link) => {
+                    const linkElement = document.createElement('a');
+                    linkElement.href = link;
+                    linkElement.target = "_blank";
+                    linkElement.innerHTML = `<span class="result-title">${term}:</span> ${link}`;
+                    resultsContainer.appendChild(linkElement);
+                });
+            }
+        });
+
+        if (!foundResults) {
+            resultsContainer.innerHTML = `<div class="no-results">No results found for "${query}"</div>`;
+        }
+    }
+    
+    function toggleTheme() {
+        document.body.classList.toggle("dark-theme");
+        document.body.classList.toggle("light-theme");
+    }
+
+    function calcStats() {
+        let totalTerms = Object.keys(fakeDatabase).length;
+        let totalLinks = 0;
+        let termWithMostLinks = '';
+        let maxLinksCount = 0;
+
+        Object.keys(fakeDatabase).forEach(term => {
+            const linksCount = fakeDatabase[term].length;
+            totalLinks += linksCount;
+            if (linksCount > maxLinksCount) {
+                maxLinksCount = linksCount;
+                termWithMostLinks = term;
+            }
+        });
+
+        let avgLinksPerTerm = totalLinks / totalTerms;
+
+        document.getElementById('totalTerms').textContent = `Total Terms: ${totalTerms}`;
+        document.getElementById('termMostLinks').textContent = `Term with Most Links: ${termWithMostLinks} (${maxLinksCount} links)`;
+        document.getElementById('totalLinks').textContent = `Total Links: ${totalLinks}`;
+        document.getElementById('avgLinksPerTerm').textContent = `Average Links per Term: ${avgLinksPerTerm.toFixed(2)}`;
+    }
+
+    function switchPage(pageId) {
+        document.querySelectorAll('.container, .search-container').forEach(function(page) {
+            page.classList.remove('active');
+        });
+        document.getElementById(pageId).classList.add('active');
+        if (pageId === 'statisticsPage') {
+            calcStats();
+        }
+    }
+
+    switchPage('searchPage');
+
+    // Example implementation for the Edit Index page
+    function addTerm() {
+        const term = document.getElementById('newTerm').value;
+            const docIds = document.getElementById('docIds').value;
+            let message = document.getElementById('addMessage');
+            console.log(term);
+            console.log(docIds);
+            fakeDatabase[term] = docIds.split(',').map(link => link.trim());
+            console.log(fakeDatabase);
+            // Here you would add the term to your database
+            message.innerHTML = `Term ${term} added successfully`;
+            message.style.color = "green";
+        // For demonstration, just reload the terms table
+        // loadTerms();
+    }
+
+    function loadTerms() {
+        // This function would fetch terms from the database and display them
+        // For demonstration, let's just clear the table and add a placeholder row
+        const tableBody = document.getElementById('termsTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = ''; // Clear existing rows
+        
+        // Add a new row as an example
+        const row = tableBody.insertRow();
+        row.insertCell(0).innerText = 'Example Term';
+        row.insertCell(1).innerText = '1, 2, 3';
+        row.insertCell(2).innerHTML = '<a href="#">Link 1</a>, <a href="#">Link 2</a>';
+        const actionsCell = row.insertCell(3);
+        const editBtn = document.createElement('button');
+        editBtn.innerText = 'Edit';
+        editBtn.className = 'btn';
+        editBtn.onclick = function() { editTerm('Example Term'); };
+        actionsCell.appendChild(editBtn);
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerText = 'Delete';
+        deleteBtn.className = 'btn';
+        deleteBtn.onclick = function() { deleteTerm('Example Term'); };
+        actionsCell.appendChild(deleteBtn);
+    }
+
+    function editTerm() {
+        const term = document.getElementById('editTerm').value;
+        const docIds = document.getElementById('editdocIds').value;
+        let message = document.getElementById('editMessage');
+        console.log(term);
+        console.log(docIds);
+        if (!fakeDatabase[term]) {
+            message.innerHTML = `Term ${term} does not exist`;
+            message.style.color = "red";
+        }
+        else {
+        fakeDatabase[term] = docIds.split(',').map(link => link.trim());
+        message.innerHTML = `Term ${term} updated successfully`;
+        message.style.color = "green";
+        }
+
+        // For demonstration, just reload the terms table
+        // loadTerms();
+    }
+
+    function deleteTerm(term) {
+        console.log(`Deleting term: ${term}`);
+        // Here you would remove the term from your database
+        loadTerms(); // Reload the terms list
+    }
+
+    function changeFontSize(action) {
+        const body = document.body;
+        const currentSize = parseInt(window.getComputedStyle(body).fontSize);
+
+        if (action === 'increase') {
+            body.style.fontSize = `${currentSize + 2}px`;
+        } else if (action === 'decrease') {
+            body.style.fontSize = `${Math.max(currentSize - 2, 10)}px`;
+        }
+    }
+
+    // Initially load terms when the page loads
+    window.onload = function() {
+        loadTerms();
+    };
+</script>
+</body>
+</html>

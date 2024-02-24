@@ -1,6 +1,6 @@
 * text=auto eol=crlf
 *.txt text eol=crlf
-*.sh text eol=lf   # Shell scripts often need LF for compatibility with Unix/Linux environments
+*.sh text eol=lf
 *.bat text eol=crlf
 *.cpp diff=cpp
 *.java whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol

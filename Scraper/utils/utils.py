@@ -45,12 +45,3 @@ def search(query, index):
         if word in index:
             results[word] = index[word]
     return results
-
-def search_engine(url, query):
-    soup = fetch_page(url)
-    if soup is None:
-        return None
-    index = index_words(soup)
-    apply_stemming(index)
-    results = search(query, index)
-    return results

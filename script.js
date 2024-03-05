@@ -1,35 +1,32 @@
 import { searchTerms } from "./test/frontEndTestFunction.js";
 
-// fakeDatabase = {
-//   GPU: [
-//     "https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/",
-//     "https://www.nvidia.com/en-us/geforce/",
-//     "https://www.nvidia.com/en-us/gpu-cloud/",
-//   ],
-//   AI: [
-//     "https://www.nvidia.com/en-us/deep-learning-ai/",
-//     "https://www.nvidia.com/en-us/omniverse/",
-//   ],
-//   Driver: [
-//     "https://www.nvidia.com/en-us/drivers/",
-//     "https://www.nvidia.com/Download/index.aspx",
-//   ],
-//   Technology: [
-//     "https://www.nvidia.com/en-us/",
-//     "https://www.nvidia.com/en-us/technologies/",
-//     "https://www.nvidia.com/en-us/industries/",
-//   ],
-//   RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
-// };
+fakeDatabase = {
+  GPU: [
+    "https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/",
+    "https://www.nvidia.com/en-us/geforce/",
+    "https://www.nvidia.com/en-us/gpu-cloud/",
+  ],
+  AI: [
+    "https://www.nvidia.com/en-us/deep-learning-ai/",
+    "https://www.nvidia.com/en-us/omniverse/",
+  ],
+  Driver: [
+    "https://www.nvidia.com/en-us/drivers/",
+    "https://www.nvidia.com/Download/index.aspx",
+  ],
+  Technology: [
+    "https://www.nvidia.com/en-us/",
+    "https://www.nvidia.com/en-us/technologies/",
+    "https://www.nvidia.com/en-us/industries/",
+  ],
+  RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
+};
 
 let currentPage = 1;
 let linksPerPage = 5; // Default links per page
 
 async function search() {
-  const query = document
-    .getElementById("searchQuery")
-    .value.trim()
-    .toUpperCase();
+  const query = document.getElementById("searchQuery").value.trim().toUpperCase();
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 
@@ -37,20 +34,9 @@ async function search() {
   const allMatchingLinks = await searchTerms(query);
   console.log(allMatchingLinks);
 
-  // Object.keys(fakeDatabase).forEach((term) => {
-  //   if (term.toUpperCase().includes(query)) {
-  //     allMatchingLinks = allMatchingLinks.concat(
-  //       fakeDatabase[term].map((link) => {
-  //         return { term: term, link: link };
-  //       })
-  //     );
-  //   }
-  // });
-
   if (allMatchingLinks.length === 0) {
-    // Display a prepared message when no results are found
     resultsContainer.innerHTML = `<div class="no-results">We couldn't find any results for "${query}". Please try another search.</div>`;
-    document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
+    document.getElementById("pagination").innerHTML = ""; 
   } else {
     const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
     displayPage(allMatchingLinks, currentPage, linksPerPage);
@@ -66,7 +52,7 @@ async function displayPage(allMatchingLinks, page, linksPerPage) {
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 
-  // Assuming `allMatchingLinks` now contains arrays of `DocsIDs` objects from your JSON structure
+  
   pageLinks.forEach((doc) => {
     const linkElement = document.createElement("div"); // Use a div to contain both the title and the link
     linkElement.classList.add("search-result");

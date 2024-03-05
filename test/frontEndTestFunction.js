@@ -42,6 +42,8 @@ async function searchTerms(searchQueryString) {
   return results;
 }
 
+export { searchTerms };
+
 //test
 const searchQueryString = "ai detect";
 searchTerms(searchQueryString).then((results) => {

@@ -49,3 +49,24 @@ searchTerms(searchQueryString).then((results) => {
     console.log(result);
   }
 });
+
+function search2() {
+  const query = document.getElementById("searchQuery").value.trim().toLowerCase();
+  const resultsContainer = document.getElementById("searchResults");
+  resultsContainer.innerHTML = "loading...";
+
+  searchTerms(query).then((results) => {
+      resultsContainer.innerHTML = "";
+      // Display the results
+      if (results.length > 0) {
+        for (const result of results) {
+          resultsContainer.innerHTML += `<div>${result.Term}</div>`;
+        }
+      } else {
+        resultsContainer.innerHTML = "<div>No results found.</div>";
+      }
+    }).catch((error) => {
+      console.error("Error occurred during search:", error);
+      resultsContainer.innerHTML = "<div>Error occurred during search.</div>";
+    });
+}

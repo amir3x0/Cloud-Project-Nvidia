@@ -16,8 +16,7 @@
       const firebaseConfig = {
         apiKey: "AIzaSyAZvGft4R9ax1o2XNk4FmJ2X07WuvUyNO4",
         authDomain: "class-presentation-79426.firebaseapp.com",
-        databaseURL:
-          "https://class-presentation-79426-default-rtdb.europe-west1.firebasedatabase.app",
+        databaseURL: "https://class-presentation-79426-default-rtdb.europe-west1.firebasedatabase.app",
         projectId: "class-presentation-79426",
         storageBucket: "class-presentation-79426.appspot.com",
         messagingSenderId: "698863119421",
@@ -29,6 +28,7 @@
     </script>
     <style></style>
   </head>
+
   <body class="light-theme">
     <div class="wrapper">
       <div class="navbar">
@@ -60,19 +60,21 @@
 
         <button
           id="searchButton"
-          onclick="toggleLinksPerPageVisibility(); search()"
+          onclick="toggleLinksPerPageVisibility(); search2();"
           class="search-button"
         >
           Search
         </button>
         <button
           onclick="clearSearch()"
-          class="search-button"
+          class="clear-button"
           style="background-color: #888"
         >
           Clear
         </button>
         <div id="searchResults" class="search-results"></div>
+
+        <div id="test"></div>
 
         <!-- Pagination Controls -->
         <div id="pagination"></div>
@@ -80,7 +82,7 @@
       <!-- Dropdown for selecting number of links per page -->
       <div id="linksPerPageContainer">
         <span id="linksPerPageText">Links per page:</span>
-        <select id="linksPerPage" onchange="search()">
+        <select id="linksPerPage" onchange="search2()">
           <option value="5">5</option>
           <option value="10">10</option>
           <option value="20">20</option>
@@ -156,5 +158,6 @@
 
     <script src="script.js"></script>
     <script src="./frontend/api.js"></script>
+    <script src="./test/frontEndTestFunction.js"></script>
   </body>
 </html>

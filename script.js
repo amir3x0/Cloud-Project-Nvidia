@@ -24,10 +24,7 @@ let currentPage = 1;
 let linksPerPage = 5; // Default links per page
 
 function search() {
-  const query = document
-    .getElementById("searchQuery")
-    .value.trim()
-    .toUpperCase();
+  const query = document.getElementById("searchQuery").value.trim().toUpperCase();
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 
@@ -115,27 +112,14 @@ function calcStats() {
     }
   });
 
-  let avgAppearancesPerTerm = totalAppearances / totalTerms;
-  let avgAppearancesPerLink = totalAppearances / totalLinks;
-
-  document.getElementById(
-    "totalTerms"
-  ).textContent = `Total Terms: ${totalTerms}`;
-  document.getElementById(
-    "termMostLinks"
-  ).textContent = `Term with Most Links: ${termWithMostLinks} (${maxLinksCount} links)`;
-  document.getElementById(
-    "totalLinks"
-  ).textContent = `Total Links: ${totalLinks}`;
-  document.getElementById(
-    "avgLinksPerTerm"
-  ).textContent = `Average Links per Term: ${avgLinksPerTerm.toFixed(2)}`;
+  document.getElementById("totalTerms").textContent = `Total Terms: ${totalTerms}`;
+  document.getElementById("termMostLinks").textContent = `Term with Most Links: ${termWithMostLinks} (${maxLinksCount} links)`;
+  document.getElementById("totalLinks").textContent = `Total Links: ${totalLinks}`;
+  document.getElementById("avgLinksPerTerm").textContent = `Average Links per Term: ${avgLinksPerTerm.toFixed(2)}`;
 }
 
 function switchPage(pageId) {
-  document
-    .querySelectorAll(".container, .search-container")
-    .forEach(function (page) {
+  document.querySelectorAll(".container, .search-container").forEach(function (page) {
       page.classList.remove("active");
     });
   document.getElementById(pageId).classList.add("active");
@@ -174,17 +158,14 @@ function addTerm() {
 function loadTerms() {
   // This function would fetch terms from the database and display them
   // For demonstration, let's just clear the table and add a placeholder row
-  const tableBody = document
-    .getElementById("termsTable")
-    .getElementsByTagName("tbody")[0];
+  const tableBody = document.getElementById("termsTable").getElementsByTagName("tbody")[0];
   tableBody.innerHTML = ""; // Clear existing rows
 
   // Add a new row as an example
   const row = tableBody.insertRow();
   row.insertCell(0).innerText = "Example Term";
   row.insertCell(1).innerText = "1, 2, 3";
-  row.insertCell(2).innerHTML =
-    '<a href="#">Link 1</a>, <a href="#">Link 2</a>';
+  row.insertCell(2).innerHTML = '<a href="#">Link 1</a>, <a href="#">Link 2</a>';
   const actionsCell = row.insertCell(3);
   const editBtn = document.createElement("button");
   editBtn.innerText = "Edit";

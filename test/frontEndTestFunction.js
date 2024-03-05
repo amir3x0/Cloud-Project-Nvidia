@@ -43,7 +43,7 @@ async function searchTerms(searchQueryString) {
 }
 
 //test
-const searchQueryString = "ai detect";
+const searchQueryString = "ai";
 searchTerms(searchQueryString).then((results) => {
   for (const result of results) {
     console.log(result);

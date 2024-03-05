@@ -20,72 +20,37 @@ fakeDatabase = {
   RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
 };
 
-let currentPage = 1;
-let linksPerPage = 5; // Default links per page
+// function search() {
+//   const query = document
+//     .getElementById("searchQuery")
+//     .value.trim()
+//     .toUpperCase();
+//   const resultsContainer = document.getElementById("searchResults");
+//   resultsContainer.innerHTML = "";
 
-function search() {
-  const query = document
-    .getElementById("searchQuery")
-    .value.trim()
-    .toUpperCase();
-  const resultsContainer = document.getElementById("searchResults");
-  resultsContainer.innerHTML = "";
+//   linksPerPage = parseInt(document.getElementById("linksPerPage").value);
+//   let allMatchingLinks = [];
 
-  linksPerPage = parseInt(document.getElementById("linksPerPage").value);
-  let allMatchingLinks = [];
+//   Object.keys(fakeDatabase).forEach((term) => {
+//     if (term.toUpperCase().includes(query)) {
+//       allMatchingLinks = allMatchingLinks.concat(
+//         fakeDatabase[term].map((link) => {
+//           return { term: term, link: link };
+//         })
+//       );
+//     }
+//   });
 
-  Object.keys(fakeDatabase).forEach((term) => {
-    if (term.toUpperCase().includes(query)) {
-      allMatchingLinks = allMatchingLinks.concat(
-        fakeDatabase[term].map((link) => {
-          return { term: term, link: link };
-        })
-      );
-    }
-  });
-
-  if (allMatchingLinks.length === 0) {
-    // Display a prepared message when no results are found
-    resultsContainer.innerHTML = `<div class="no-results">We couldn't find any results for "${query}". Please try another search.</div>`;
-    document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
-  } else {
-    const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
-    displayPage(allMatchingLinks, currentPage, linksPerPage);
-    setupPagination(totalPages);
-  }
-}
-
-function displayPage(allMatchingLinks, page, linksPerPage) {
-  const start = (page - 1) * linksPerPage;
-  const end = start + linksPerPage;
-  const pageLinks = allMatchingLinks.slice(start, end);
-
-  const resultsContainer = document.getElementById("searchResults");
-  resultsContainer.innerHTML = "";
-
-  pageLinks.forEach(({ term, link }) => {
-    const linkElement = document.createElement("a");
-    linkElement.href = link;
-    linkElement.target = "_blank";
-    linkElement.innerHTML = `<span class="result-title">${term}:</span> ${link}`;
-    resultsContainer.appendChild(linkElement);
-  });
-}
-
-function setupPagination(totalPages) {
-  const paginationContainer = document.getElementById("pagination");
-  paginationContainer.innerHTML = "";
-
-  for (let i = 1; i <= totalPages; i++) {
-    const pageLink = document.createElement("button");
-    pageLink.textContent = i;
-    pageLink.onclick = function () {
-      currentPage = i;
-      search();
-    };
-    paginationContainer.appendChild(pageLink);
-  }
-}
+//   if (allMatchingLinks.length === 0) {
+//     // Display a prepared message when no results are found
+//     resultsContainer.innerHTML = `<div class="no-results">We couldn't find any results for "${query}". Please try another search.</div>`;
+//     document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
+//   } else {
+//     const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
+//     displayPage(allMatchingLinks, currentPage, linksPerPage);
+//     setupPagination(totalPages);
+//   }
+// }
 
 // New clearSearch function
 function clearSearch() {

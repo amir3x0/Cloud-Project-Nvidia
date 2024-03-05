@@ -11,18 +11,21 @@
     <link rel="stylesheet" href="style.css" />
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
     <script>
-      var firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID",
-        measurementId: "YOUR_MEASUREMENT_ID",
+      const firebaseConfig = {
+        apiKey: "AIzaSyAZvGft4R9ax1o2XNk4FmJ2X07WuvUyNO4",
+        authDomain: "class-presentation-79426.firebaseapp.com",
+        databaseURL:
+          "https://class-presentation-79426-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "class-presentation-79426",
+        storageBucket: "class-presentation-79426.appspot.com",
+        messagingSenderId: "698863119421",
+        appId: "1:698863119421:web:5ad514ecb5f35bc9d80e54",
+        measurementId: "G-HLSHVVW5K1",
       };
       firebase.initializeApp(firebaseConfig);
-      var db = firebase.firestore();
+      const database = firebase.database();
     </script>
     <style></style>
   </head>
@@ -54,8 +57,9 @@
           class="search-box"
           placeholder="Search Nvidia products, news, or information..."
         />
+
         <button
-          <button
+          id="searchButton"
           onclick="toggleLinksPerPageVisibility(); search()"
           class="search-button"
         >

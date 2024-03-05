@@ -31,3 +31,5 @@ async function searchTerms(searchQueryString) {
 }
 
 document.getElement("searchButton").addEventListener("click", async () => {});
+
+

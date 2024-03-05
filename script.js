@@ -1,29 +1,31 @@
-fakeDatabase = {
-  GPU: [
-    "https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/",
-    "https://www.nvidia.com/en-us/geforce/",
-    "https://www.nvidia.com/en-us/gpu-cloud/",
-  ],
-  AI: [
-    "https://www.nvidia.com/en-us/deep-learning-ai/",
-    "https://www.nvidia.com/en-us/omniverse/",
-  ],
-  Driver: [
-    "https://www.nvidia.com/en-us/drivers/",
-    "https://www.nvidia.com/Download/index.aspx",
-  ],
-  Technology: [
-    "https://www.nvidia.com/en-us/",
-    "https://www.nvidia.com/en-us/technologies/",
-    "https://www.nvidia.com/en-us/industries/",
-  ],
-  RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
-};
+import { searchTerms } from "./test/frontEndTestFunction.js";
+
+// fakeDatabase = {
+//   GPU: [
+//     "https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/",
+//     "https://www.nvidia.com/en-us/geforce/",
+//     "https://www.nvidia.com/en-us/gpu-cloud/",
+//   ],
+//   AI: [
+//     "https://www.nvidia.com/en-us/deep-learning-ai/",
+//     "https://www.nvidia.com/en-us/omniverse/",
+//   ],
+//   Driver: [
+//     "https://www.nvidia.com/en-us/drivers/",
+//     "https://www.nvidia.com/Download/index.aspx",
+//   ],
+//   Technology: [
+//     "https://www.nvidia.com/en-us/",
+//     "https://www.nvidia.com/en-us/technologies/",
+//     "https://www.nvidia.com/en-us/industries/",
+//   ],
+//   RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
+// };
 
 let currentPage = 1;
 let linksPerPage = 5; // Default links per page
 
-function search() {
+async function search() {
   const query = document
     .getElementById("searchQuery")
     .value.trim()
@@ -32,17 +34,18 @@ function search() {
   resultsContainer.innerHTML = "";
 
   linksPerPage = parseInt(document.getElementById("linksPerPage").value);
-  let allMatchingLinks = [];
+  const allMatchingLinks = await searchTerms(query);
+  console.log(allMatchingLinks);
 
-  Object.keys(fakeDatabase).forEach((term) => {
-    if (term.toUpperCase().includes(query)) {
-      allMatchingLinks = allMatchingLinks.concat(
-        fakeDatabase[term].map((link) => {
-          return { term: term, link: link };
-        })
-      );
-    }
-  });
+  // Object.keys(fakeDatabase).forEach((term) => {
+  //   if (term.toUpperCase().includes(query)) {
+  //     allMatchingLinks = allMatchingLinks.concat(
+  //       fakeDatabase[term].map((link) => {
+  //         return { term: term, link: link };
+  //       })
+  //     );
+  //   }
+  // });
 
   if (allMatchingLinks.length === 0) {
     // Display a prepared message when no results are found
@@ -55,7 +58,7 @@ function search() {
   }
 }
 
-function displayPage(allMatchingLinks, page, linksPerPage) {
+async function displayPage(allMatchingLinks, page, linksPerPage) {
   const start = (page - 1) * linksPerPage;
   const end = start + linksPerPage;
   const pageLinks = allMatchingLinks.slice(start, end);
@@ -63,11 +66,23 @@ function displayPage(allMatchingLinks, page, linksPerPage) {
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 
-  pageLinks.forEach(({ term, link }) => {
-    const linkElement = document.createElement("a");
-    linkElement.href = link;
-    linkElement.target = "_blank";
-    linkElement.innerHTML = `<span class="result-title">${term}:</span> ${link}`;
+  // Assuming `allMatchingLinks` now contains arrays of `DocsIDs` objects from your JSON structure
+  pageLinks.forEach((doc) => {
+    const linkElement = document.createElement("div"); // Use a div to contain both the title and the link
+    linkElement.classList.add("search-result");
+
+    // Create an anchor element for the link
+    const anchorElement = document.createElement("a");
+    anchorElement.href = doc.url;
+    anchorElement.target = "_blank";
+    anchorElement.textContent = doc.title;
+
+    // Append the anchor element to the linkElement
+    linkElement.appendChild(anchorElement);
+
+    // Optionally, create and append other elements here, like a span for the occurrence number or description
+
+    // Append the constructed element to the results container
     resultsContainer.appendChild(linkElement);
   });
 }

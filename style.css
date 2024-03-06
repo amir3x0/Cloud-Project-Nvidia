@@ -39,7 +39,6 @@ body {
 .wrapper {
   width: 100%;
   max-width: 1200px;
-  margin: auto;
   padding: 20px;
 }
 .navbar,
@@ -134,6 +133,7 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: var(--container-background-color);
 }
+
 .search-results a {
   display: block;
   color: var(--link-color);
@@ -159,12 +159,42 @@ body {
 .theme-toggle {
   color: var(--navbar-text-color);
   text-decoration: none;
-  margin-left: 30px; /* Increased space between each item */
-  font-weight: bold; /* Make text bold */
+  margin-left: 30px; 
+  font-weight: bold; 
   cursor: pointer;
   position: relative;
   transition: color 0.3s ease;
 }
+.containerlogo {
+  position: absolute; 
+}
+
+.top-image {
+  width: 200px; 
+
+}
+.text-logo{
+  font-size: 35px;
+  font-weight: bold; 
+  color: rgb(68, 248, 68);
+  position: relative;
+  top: -120px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  text-shadow: -1px -1px 0 #000,  
+  2px -1px 0 #000,
+  -1px 1px 0 #000,
+  2px 2px 0 #000; 
+  cursor: pointer;
+  transition: transform 0.3s, font-size 0.3s; 
+}
+.text-logo:hover {
+  font-size: 36px; 
+
+}
+
+
+
 
 /* Cool animation effect for hover */
 .navbar .nav-links a::after,

@@ -21,13 +21,6 @@ fakeDatabase = {
 };
 
 
-// function search() {
-//   const query = document
-//     .getElementById("searchQuery")
-//     .value.trim()
-//     .toUpperCase();
-//   const resultsContainer = document.getElementById("searchResults");
-//   resultsContainer.innerHTML = "";
 let currentPage = 1;
 let linksPerPage = 5; // Default links per page
 let allMatchingLinks = []; // Moved to a global scope

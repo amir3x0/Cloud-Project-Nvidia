@@ -75,15 +75,25 @@
       </select>
     </div>
 
-    <div id="editIndexPage" class="container">
-      <h2>Edit Index</h2>
-      <div class="form-container">
-        <input type="text" id="editTerm" class="input-field" placeholder="Existing term" />
-        <input type="text" id="editdocIds" class="input-field" placeholder="DocIDs (comma-separated)" />
-        <button class="btn" onclick="editTerm()">Edit Term</button>
-      </div>
-      <h2 id="editMessage"></h2>
+
+      <div id="editIndexPage" class="container">
+        <h2>Edit Index</h2>
+        <div class="form-container">
+            <input type="text" id="editTerm" class="input-field" placeholder="Existing term" />
+            <button class="btn" onclick="fetchTermDetails()">Fetch Term Details</button>
+            <div id="editDetails" style="display:none;">
+                <label for="docIdsContainer" class="input-label">DocIDs:</label>
+                <div id="docIdsContainer" class="doc-ids-container"></div>
+                <!-- Updated section for adding a new DocID -->
+                <input type="text" id="newDocTitle" class="input-field" placeholder="Enter new DocID title" />
+                <input type="text" id="newDocUrl" class="input-field" placeholder="Enter new DocID URL" />
+                <input type="number" id="newDocOccurrence" class="input-field" placeholder="Enter new DocID occurrence number" />
+                <button id="addDocIdButton" class="btn">+ Add DocID</button>
+            </div>
+        </div>
+        <h2 id="editMessage"></h2>
     </div>
+
 
     <div id="addIndexPage" class="container">
       <h2>Add term</h2>

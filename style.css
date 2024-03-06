@@ -239,61 +239,126 @@ body {
 
 /* Styles for the admin page */
 .editIndexPage-container {
-  background-color: #fff;
+  background-color: var(--navbar-background-color); /* Dark background */
+  color: var(--text-color); /* Light text */
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  margin-top: 20px;
 }
-table {
+
+.editIndexPage-container input[type="text"],
+.editIndexPage-container textarea {
   width: 100%;
-  border-collapse: collapse;
-}
-table,
-th,
-td {
-  border: 1px solid var(--border-color);
-  text-align: left;
-  padding: 8px;
-}
-th {
-  background-color: var(--navbar-background-color);
-  color: var(--navbar-text-color);
-}
-tr:nth-child(even) {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ddd;
   background-color: var(--background-color);
+  color: var(--text-color);
 }
-a {
-  color: var(--link-color);
-}
-.btn {
-  background-color: #76b900; /* Nvidia green */
-  color: white;
+
+.editIndexPage-container button {
+  background-color: var(--button-background-color); /* Nvidia green */
+  color: var(--button-text-color); /* White */
   border: none;
-  padding: 5px 10px;
+  padding: 10px 20px;
   margin: 5px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
-.btn:hover {
-  background-color: #5a8e00;
+
+.editIndexPage-container button:hover {
+  background-color: #5a8e00; /* Darker green */
 }
-.btn-small {
-  padding: 2px 5px;
-  font-size: 0.8rem;
+
+.editIndexPage-container .feedback-message {
+  margin-top: 10px;
 }
-.input-field {
-  padding: 8px;
-  margin: 5px 0;
-  box-sizing: border-box;
+
+.success, .error {
+  font-weight: bold;
+  padding: 10px;
   border-radius: 4px;
-  border: 1px solid #ccc;
+  margin-top: 10px;
 }
-.form-container {
-  margin-bottom: 20px;
+
+.success {
+  background-color: var(--button-background-color); /* Success messages in Nvidia green */
 }
+
+.error {
+  background-color: var(--error-color); /* Error messages in bright red for attention */
+}
+
+/* Additional styles for editable DocID URLs */
+.doc-ids-container {
+  background-color: var(--background-color); /* Match the search results background */
+  color: var(--text-color);
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+
+.editable-docid {
+  margin: 10px 0;
+  padding: 5px;
+  border: 1px dashed var(--border-color); /* Dashed border for editable fields */
+  border-radius: 5px;
+  background-color: var(--container-background-color); /* Slightly different background for focus */
+}
+
+.editable-docid:focus {
+  border: 1px solid var(--link-color); /* Highlight on focus */
+  outline: none; /* Remove default focus outline */
+  background-color: #f5f5f5; /* Lighter background on focus */
+}
+
+.edit-controls {
+  margin: 0 5px; /* Adjust spacing around control buttons */
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around; /* Evenly space the add/remove buttons */
+}
+
+.btn {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  transition: background-color 0.2s, transform 0.1s; /* Smoother transitions */
+  /* Other button styles remain unchanged */
+}
+
+.btn:hover {
+  opacity: 0.9; /* Slightly lower opacity for hover effect */
+  background-color: #5a8e00; /* Slightly darker green on hover */
+  transform: scale(1.05); /* Subtle grow effect */
+}
+
+.input-field, .btn {
+  margin-bottom: 15px; /* Consistent spacing */
+}
+
+/* Ensuring text and button colors align with the theme */
+.input-label, #editMessage {
+  color: var(--text-color);
+}
+
+.editIndexPage-container .editable-docid, .doc-ids-container {
+  background-color: var(--background-color); /* Slightly darker for focus */
+  border: 1px solid var(--border-color); /* Defined borders for separation */
+}
+
+.editable-docid:focus, .editable-content:focus, .editable-url:focus {
+  background-color: #333; /* Darker focus state for contrast */
+  color: var(--button-text-color);
+  border-color: var(--link-color); /* Nvidia green border on focus */
+}
+
 /* End admin page styles */
+
+
+
 
 /* Styles for the footer */
 .footer {
@@ -450,6 +515,7 @@ a {
   font-weight: bold;
   color: #28a745;
 }
+
 .activebtn {
   background-color: #007bff;
 }
@@ -485,3 +551,4 @@ a {
   flex: 1;
   padding: 10px; 
 }
+

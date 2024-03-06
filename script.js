@@ -190,7 +190,7 @@ function loadTerms() {
   const tableBody = document
     .getElementById("termsTable")
     .getElementsByTagName("tbody")[0];
-  tableBody.innerHTML = ""; // Clear existing rows
+  tableBody.innerHTML = "";
 
   // Add a new row as an example
   const row = tableBody.insertRow();

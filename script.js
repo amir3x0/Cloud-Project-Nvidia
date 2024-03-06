@@ -20,6 +20,7 @@ fakeDatabase = {
   RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
 };
 
+
 // function search() {
 //   const query = document
 //     .getElementById("searchQuery")
@@ -27,32 +28,89 @@ fakeDatabase = {
 //     .toUpperCase();
 //   const resultsContainer = document.getElementById("searchResults");
 //   resultsContainer.innerHTML = "";
+let currentPage = 1;
+let linksPerPage = 5; // Default links per page
+let allMatchingLinks = []; // Moved to a global scope
 
-//   linksPerPage = parseInt(document.getElementById("linksPerPage").value);
-//   let allMatchingLinks = [];
+async function search() {
+  currentPage = 1; // Reset to first page for every new search
+  const query = document.getElementById("searchQuery").value.trim().toLowerCase();
+  const resultsContainer = document.getElementById("searchResults");
+  resultsContainer.innerHTML = "";
 
-//   Object.keys(fakeDatabase).forEach((term) => {
-//     if (term.toUpperCase().includes(query)) {
-//       allMatchingLinks = allMatchingLinks.concat(
-//         fakeDatabase[term].map((link) => {
-//           return { term: term, link: link };
-//         })
-//       );
-//     }
-//   });
+  linksPerPage = parseInt(document.getElementById("linksPerPage").value) || 5;
+  allMatchingLinks = []; // Reset for new search
 
-//   if (allMatchingLinks.length === 0) {
-//     // Display a prepared message when no results are found
-//     resultsContainer.innerHTML = `<div class="no-results">We couldn't find any results for "${query}". Please try another search.</div>`;
-//     document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
-//   } else {
-//     const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
-//     displayPage(allMatchingLinks, currentPage, linksPerPage);
-//     setupPagination(totalPages);
-//   }
-// }
+  const results = await searchTerms(query);
 
-// New clearSearch function
+  if (results.length > 0) {
+    results.forEach((result) => {
+      let docs = result.DocsIDs.map((doc) => ({
+        term: result.Term,
+        title: doc.title,
+        url: doc.url,
+        occuranceNumber: doc.occuranceNumber,
+      }));
+      allMatchingLinks = allMatchingLinks.concat(docs);
+    });
+
+    const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
+    displayPage(currentPage); // Now only currentPage is needed as parameter
+    setupPagination(totalPages);
+  } else {
+    resultsContainer.innerHTML = `<div>No results found for "<span class=\"term\">${query}</span>".</div>`;
+    document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
+  }
+}
+
+function displayPage(page) {
+  const start = (page - 1) * linksPerPage;
+  const end = start + linksPerPage;
+  const pageLinks = allMatchingLinks.slice(start, end);
+
+  const resultsContainer = document.getElementById("searchResults");
+  resultsContainer.innerHTML = ""; // Clear previous results
+
+  pageLinks.forEach(({ term, title, url, occuranceNumber }) => {
+    const docHtml = `<div class="doc">
+                       <a href="${url}" target="_blank" class="doc-url">
+                        <div class="doc-info"><span class="doc-title">${title}</span> <span class="doc-term">[${term}]</span> <span class="doc-occurrences">(${occuranceNumber} occurrences)</span></div>
+                        <div>${url}</div>
+                       </a>
+                     </div>`;
+    resultsContainer.innerHTML += docHtml;
+  });
+}
+
+function setupPagination(totalPages) {
+  const paginationContainer = document.getElementById("pagination");
+  paginationContainer.innerHTML = ""; // Clear previous pagination
+
+  for (let i = 1; i <= totalPages; i++) {
+    const pageLink = document.createElement("button");
+    pageLink.className = "pagination-btn";
+    pageLink.textContent = i;
+    pageLink.onclick = function () {
+      currentPage = i;
+      displayPage(currentPage);
+      updateActiveButton(currentPage);
+    };
+    paginationContainer.appendChild(pageLink);
+  }
+}
+
+function updateActiveButton(activePageIndex) {
+  const buttons = paginationContainer.querySelectorAll(".pagination-btn");
+  buttons.forEach((button, index) => {
+    if (index === activePageIndex) {
+      button.classList.add("active");
+    } else {
+      button.classList.remove("active");
+    }
+  });
+}
+
+// Clear Search function
 function clearSearch() {
   document.getElementById("searchQuery").value = "";
   document.getElementById("searchResults").innerHTML = "";
@@ -79,9 +137,6 @@ function calcStats() {
       termWithMostLinks = term;
     }
   });
-
-  let avgAppearancesPerTerm = totalAppearances / totalTerms;
-  let avgAppearancesPerLink = totalAppearances / totalLinks;
 
   document.getElementById(
     "totalTerms"
@@ -118,6 +173,7 @@ function switchPage(pageId) {
   }, 10);
 }
 
+
 switchPage("searchPage");
 
 // Example implementation for the Edit Index page
@@ -142,7 +198,7 @@ function loadTerms() {
   const tableBody = document
     .getElementById("termsTable")
     .getElementsByTagName("tbody")[0];
-  tableBody.innerHTML = ""; // Clear existing rows
+  tableBody.innerHTML = "";
 
   // Add a new row as an example
   const row = tableBody.insertRow();
@@ -214,4 +270,38 @@ function changeFontSize(action) {
   window.onload = function () {
     loadTerms();
   };
+}
+
+// Function to search a query in database. Returns a dict of matches.
+async function searchTerms(searchQueryString) {
+  const results = [];
+
+  // Convert the search query string to lowercase and match words, ignoring non-word characters
+  const words = searchQueryString.toLowerCase().match(/\w+/g);
+  //print the words in the words array
+  console.log(words);
+
+  if (!words) {
+    return results; // Return an empty array if no words are found
+  }
+
+  // get all index from DB
+  const snapshot = await db.ref("/test").once("value");
+
+  if (snapshot.exists()) {
+    snapshot.forEach((childSnapshot) => {
+      const data = childSnapshot.val();
+
+      // Check if any word in the search query matches the Term, ignoring case
+      // Convert both to lowercase for case-insensitive comparison
+      if (data && data.Term && words.includes(data.Term.toLowerCase())) {
+        if (data.DocsIDs && data.DocsIDs.length > 0) {
+          // Push the whole data object if a match is found
+          results.push(data);
+        }
+      }
+    });
+  }
+
+  return results;
 }

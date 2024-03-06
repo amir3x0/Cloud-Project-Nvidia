@@ -16,8 +16,7 @@
       const firebaseConfig = {
         apiKey: "AIzaSyAZvGft4R9ax1o2XNk4FmJ2X07WuvUyNO4",
         authDomain: "class-presentation-79426.firebaseapp.com",
-        databaseURL:
-          "https://class-presentation-79426-default-rtdb.europe-west1.firebasedatabase.app",
+        databaseURL: "https://class-presentation-79426-default-rtdb.europe-west1.firebasedatabase.app",
         projectId: "class-presentation-79426",
         storageBucket: "class-presentation-79426.appspot.com",
         messagingSenderId: "698863119421",
@@ -25,10 +24,11 @@
         measurementId: "G-HLSHVVW5K1",
       };
       firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
+      var db = firebase.database();
     </script>
     <style></style>
   </head>
+
   <body class="light-theme">
     <div class="wrapper">
       <div class="navbar">
@@ -60,14 +60,18 @@
 
         <button
           id="searchButton"
+<<<<<<< HEAD
+          onclick="toggleLinksPerPageVisibility(); search();"
+=======
           onclick="toggleLinksPerPageVisibility();"
+>>>>>>> origin/main
           class="search-button"
         >
           Search
         </button>
         <button
           onclick="clearSearch()"
-          class="search-button"
+          class="clear-button"
           style="background-color: #888"
         >
           Clear
@@ -155,6 +159,6 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="./frontend/api.js"></script>
+    <!-- <script src="./frontend/api.js"></script> -->
   </body>
 </html>

@@ -26,6 +26,7 @@
       firebase.initializeApp(firebaseConfig);
       var db = firebase.database();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style></style>
   </head>
 
@@ -60,11 +61,7 @@
 
         <button
           id="searchButton"
-<<<<<<< HEAD
           onclick="toggleLinksPerPageVisibility(); search();"
-=======
-          onclick="toggleLinksPerPageVisibility();"
->>>>>>> origin/main
           class="search-button"
         >
           Search
@@ -133,12 +130,17 @@
       </div>
 
       <div id="statisticsPage" class="container">
-        <h2 class="stats-header">Index Statistics</h2>
-        <div class="stats-list">
-          <p id="totalTerms">Total Terms: Calculating...</p>
-          <p id="termMostLinks">Term with Most Links: Calculating...</p>
-          <p id="totalLinks">Total Links: Calculating...</p>
-          <p id="ascriptsPerTerm">Average Links per Term: Calculating...</p>
+        <div id="statsContainer"> 
+          <h1>Data Statistics</h1>
+          <div id="statsTable"></div>
+          <div id="chartContainer">
+            <div class="chartWrapper">
+              <canvas id="commonTermsChart"></canvas>
+            </div>
+            <div class="chartWrapper">
+              <canvas id="commonLinksChart"></canvas>
+            </div>
+          </div>
         </div>
       </div>
 

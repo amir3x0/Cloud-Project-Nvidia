@@ -1,13 +1,4 @@
-var admin = require("firebase-admin");
 
-var serviceAccount = require("./class-presentation-79426-firebase-adminsdk-151s7-97e577e16c.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL:
-    "https://class-presentation-79426-default-rtdb.europe-west1.firebasedatabase.app",
-});
-const db = admin.database();
 
 async function searchTerms(searchQueryString) {
   const results = [];
@@ -42,28 +33,11 @@ async function searchTerms(searchQueryString) {
   return results;
 }
 
-function search2() {
-  document.getElement("searchResults").innerHTML = `<div> "AI" </div>`;
-}
-
-
-// function search2() {
-//   const query = document.getElementById("searchQuery").value.trim().toLowerCase();
-//   const resultsContainer = document.getElementById("searchResults");
-//   resultsContainer.innerHTML = "loading...";
-
-//   searchTerms(query).then((results) => {
-//       resultsContainer.innerHTML = "";
-//       // Display the results
-//       if (results.length > 0) {
-//         for (const result of results) {
-//           resultsContainer.innerHTML += `<div>${result.Term}</div>`;
-//         }
-//       } else {
-//         resultsContainer.innerHTML = "<div>No results found.</div>";
-//       }
-//     }).catch((error) => {
-//       console.error("Error occurred during search:", error);
-//       resultsContainer.innerHTML = "<div>Error occurred during search.</div>";
-//     });
-// }
+module.exports = searchTerms;
+// test
+// const searchQueryString = "ai detect";
+// searchTerms(searchQueryString).then((results) => {
+//   for (const result of results) {
+//     console.log(result);
+//   }
+// });

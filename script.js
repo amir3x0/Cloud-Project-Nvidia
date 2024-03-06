@@ -23,7 +23,7 @@ fakeDatabase = {
 let currentPage = 1;
 let linksPerPage = 5; // Default links per page
 
-function search() {
+async function search() {
   const query = document.getElementById("searchQuery").value.trim().toUpperCase();
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
@@ -31,25 +31,44 @@ function search() {
   linksPerPage = parseInt(document.getElementById("linksPerPage").value);
   let allMatchingLinks = [];
 
-  Object.keys(fakeDatabase).forEach((term) => {
-    if (term.toUpperCase().includes(query)) {
-      allMatchingLinks = allMatchingLinks.concat(
-        fakeDatabase[term].map((link) => {
-          return { term: term, link: link };
-        })
-      );
-    }
-  });
+  const results = await searchTerms(query);
 
-  if (allMatchingLinks.length === 0) {
-    // Display a prepared message when no results are found
-    resultsContainer.innerHTML = `<div class="no-results">We couldn't find any results for "${query}". Please try another search.</div>`;
-    document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
+  if (results.length > 0) {
+    results.forEach((result) => {
+      let docsHtml = "";
+      result.DocsIDs.forEach((doc) => {
+        docsHtml += `<div class="doc">
+                       <a href="${doc.url}" target="_blank" class="doc-url">
+                        <div class="doc-info"> <span class="doc-title">${doc.title}</span> <span class="doc-term">[${result.Term}] </span> <span class="doc-occurrences">(${doc.occuranceNumber} occurrences)</span></div>
+                        <div class="doc-url"> ${doc.url} </div> 
+                       </a>
+                     </div>`;
+      });
+      resultsContainer.innerHTML += `<div>${docsHtml}</div>`;
+    });
   } else {
-    const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
-    displayPage(allMatchingLinks, currentPage, linksPerPage);
-    setupPagination(totalPages);
+    resultsContainer.innerHTML += `<div>No results found for "<span class="term">${query}</span>".</div>`;
   }
+
+  // Object.keys(fakeDatabase).forEach((term) => {
+  //   if (term.toUpperCase().includes(query)) {
+  //     allMatchingLinks = allMatchingLinks.concat(
+  //       fakeDatabase[term].map((link) => {
+  //         return { term: term, link: link };
+  //       })
+  //     );
+  //   }
+  // });
+
+  // if (allMatchingLinks.length === 0) {
+  //   // Display a prepared message when no results are found
+  //   resultsContainer.innerHTML = `<div class="no-results">We couldn't find any results for "${query}". Please try another search.</div>`;
+  //   document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
+  // } else {
+  //   const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
+  //   displayPage(allMatchingLinks, currentPage, linksPerPage);
+  //   setupPagination(totalPages);
+  // }
 }
 
 function displayPage(allMatchingLinks, page, linksPerPage) {
@@ -112,14 +131,24 @@ function calcStats() {
     }
   });
 
-  document.getElementById("totalTerms").textContent = `Total Terms: ${totalTerms}`;
-  document.getElementById("termMostLinks").textContent = `Term with Most Links: ${termWithMostLinks} (${maxLinksCount} links)`;
-  document.getElementById("totalLinks").textContent = `Total Links: ${totalLinks}`;
-  document.getElementById("avgLinksPerTerm").textContent = `Average Links per Term: ${avgLinksPerTerm.toFixed(2)}`;
+  document.getElementById(
+    "totalTerms"
+  ).textContent = `Total Terms: ${totalTerms}`;
+  document.getElementById(
+    "termMostLinks"
+  ).textContent = `Term with Most Links: ${termWithMostLinks} (${maxLinksCount} links)`;
+  document.getElementById(
+    "totalLinks"
+  ).textContent = `Total Links: ${totalLinks}`;
+  document.getElementById(
+    "avgLinksPerTerm"
+  ).textContent = `Average Links per Term: ${avgLinksPerTerm.toFixed(2)}`;
 }
 
 function switchPage(pageId) {
-  document.querySelectorAll(".container, .search-container").forEach(function (page) {
+  document
+    .querySelectorAll(".container, .search-container")
+    .forEach(function (page) {
       page.classList.remove("active");
     });
   document.getElementById(pageId).classList.add("active");
@@ -158,14 +187,17 @@ function addTerm() {
 function loadTerms() {
   // This function would fetch terms from the database and display them
   // For demonstration, let's just clear the table and add a placeholder row
-  const tableBody = document.getElementById("termsTable").getElementsByTagName("tbody")[0];
+  const tableBody = document
+    .getElementById("termsTable")
+    .getElementsByTagName("tbody")[0];
   tableBody.innerHTML = ""; // Clear existing rows
 
   // Add a new row as an example
   const row = tableBody.insertRow();
   row.insertCell(0).innerText = "Example Term";
   row.insertCell(1).innerText = "1, 2, 3";
-  row.insertCell(2).innerHTML = '<a href="#">Link 1</a>, <a href="#">Link 2</a>';
+  row.insertCell(2).innerHTML =
+    '<a href="#">Link 1</a>, <a href="#">Link 2</a>';
   const actionsCell = row.insertCell(3);
   const editBtn = document.createElement("button");
   editBtn.innerText = "Edit";
@@ -230,4 +262,37 @@ function changeFontSize(action) {
   window.onload = function () {
     loadTerms();
   };
+}
+
+async function searchTerms(searchQueryString) {
+  const results = [];
+
+  // Convert the search query string to lowercase and match words, ignoring non-word characters
+  const words = searchQueryString.toLowerCase().match(/\w+/g);
+  //print the words in the words array
+  console.log(words);
+
+  if (!words) {
+    return results; // Return an empty array if no words are found
+  }
+
+  // get all index from DB
+  const snapshot = await db.ref("/test").once("value");
+
+  if (snapshot.exists()) {
+    snapshot.forEach((childSnapshot) => {
+      const data = childSnapshot.val();
+
+      // Check if any word in the search query matches the Term, ignoring case
+      // Convert both to lowercase for case-insensitive comparison
+      if (data && data.Term && words.includes(data.Term.toLowerCase())) {
+        if (data.DocsIDs && data.DocsIDs.length > 0) {
+          // Push the whole data object if a match is found
+          results.push(data);
+        }
+      }
+    });
+  }
+
+  return results;
 }

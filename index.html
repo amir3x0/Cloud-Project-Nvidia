@@ -24,7 +24,7 @@
         measurementId: "G-HLSHVVW5K1",
       };
       firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
+      var db = firebase.database();
     </script>
     <style></style>
   </head>
@@ -60,7 +60,7 @@
 
         <button
           id="searchButton"
-          onclick="toggleLinksPerPageVisibility(); search2();"
+          onclick="toggleLinksPerPageVisibility(); search();"
           class="search-button"
         >
           Search
@@ -158,6 +158,5 @@
 
     <script src="script.js"></script>
     <script src="./frontend/api.js"></script>
-    <script src="./test/frontEndTestFunction.js"></script>
   </body>
 </html>

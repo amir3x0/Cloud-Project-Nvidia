@@ -20,14 +20,16 @@ fakeDatabase = {
   RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
 };
 
-
 let currentPage = 1;
 let linksPerPage = 5; // Default links per page
 let allMatchingLinks = []; // Moved to a global scope
 
 async function search() {
   currentPage = 1; // Reset to first page for every new search
-  const query = document.getElementById("searchQuery").value.trim().toLowerCase();
+  const query = document
+    .getElementById("searchQuery")
+    .value.trim()
+    .toLowerCase();
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 
@@ -166,24 +168,9 @@ function switchPage(pageId) {
   }, 10);
 }
 
-
 switchPage("searchPage");
 
-// Example implementation for the Edit Index page
-function addTerm() {
-  const term = document.getElementById("newTerm").value;
-  const docIds = document.getElementById("docIds").value;
-  let message = document.getElementById("addMessage");
-  console.log(term);
-  console.log(docIds);
-  fakeDatabase[term] = docIds.split(",").map((link) => link.trim());
-  console.log(fakeDatabase);
-  // Here you would add the term to your database
-  message.innerHTML = `Term ${term} added successfully`;
-  message.style.color = "green";
-  // For demonstration, just reload the terms table
-  // loadTerms();
-}
+
 
 function loadTerms() {
   // This function would fetch terms from the database and display them
@@ -217,30 +204,6 @@ function loadTerms() {
   actionsCell.appendChild(deleteBtn);
 }
 
-function editTerm() {
-  const term = document.getElementById("editTerm").value;
-  const docIds = document.getElementById("editdocIds").value;
-  let message = document.getElementById("editMessage");
-  console.log(term);
-  console.log(docIds);
-  if (!fakeDatabase[term]) {
-    message.innerHTML = `Term ${term} does not exist`;
-    message.style.color = "red";
-  } else {
-    fakeDatabase[term] = docIds.split(",").map((link) => link.trim());
-    message.innerHTML = `Term ${term} updated successfully`;
-    message.style.color = "green";
-  }
-
-  // For demonstration, just reload the terms table
-  // loadTerms();
-}
-
-function deleteTerm(term) {
-  console.log(`Deleting term: ${term}`);
-  // Here you would remove the term from your database
-  loadTerms(); // Reload the terms list
-}
 
 function toggleLinksPerPageVisibility() {
   const linksPerPageContainer = document.getElementById(
@@ -298,3 +261,124 @@ async function searchTerms(searchQueryString) {
 
   return results;
 }
+
+
+//////////////////////////////////edit section///////////////////////////////////////////////////////
+
+// Fetch details for a specific term and display them
+async function fetchTermDetails() {
+  const termInput = document.getElementById("editTerm");
+  const term = termInput.value.trim().toLowerCase();
+  const results = await searchTerms(term);
+  const docIdsContainer = document.getElementById("docIdsContainer");
+  docIdsContainer.innerHTML = "";
+
+  if (results.length === 0) {
+    alert("No details found for term: " + term);
+    return;
+  }
+
+  results[0].DocsIDs.forEach((doc, index) => {
+    const docDiv = document.createElement("div");
+    docDiv.className = "doc-container";
+    docDiv.setAttribute("data-index", index);
+
+    const docContent = `
+      <div contentEditable="true" class="editable-content" data-index="${index}">
+        ${doc.title} (${doc.occuranceNumber} occurrences)
+      </div>
+      <div contentEditable="true" class="editable-url" data-index="${index}">
+        ${doc.url}
+      </div>
+    `;
+    docDiv.innerHTML = docContent;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.innerText = "Remove";
+    removeBtn.setAttribute("data-index", index);
+    removeBtn.onclick = () => removeDocId(term, index);
+
+    docDiv.appendChild(removeBtn);
+    docIdsContainer.appendChild(docDiv);
+  });
+
+  document.getElementById("editDetails").style.display = "block";
+}
+
+// Remove a specific DocID from a term
+async function removeDocId(term, index) {
+  const currentDocIds = await fetchCurrentDocIds(term);
+  if (currentDocIds && currentDocIds.length > index) {
+    currentDocIds.splice(index, 1);
+
+    await db.ref(`/test/${term}`).update({ DocsIDs: currentDocIds })
+      .then(() => {
+        alert("DocID removed successfully.");
+        fetchTermDetails();
+      })
+      .catch(error => {
+        console.error("Error removing DocID: ", error);
+        alert("Failed to remove DocID.");
+      });
+  } else {
+    alert("No DocID found to remove.");
+  }
+}
+
+// Fetch the current DocIDs for a term
+async function fetchCurrentDocIds(term) {
+  const snapshot = await db.ref(`/test/${term}/DocsIDs`).once("value");
+  if (snapshot.exists()) {
+    return snapshot.val();
+  } else {
+    return [];
+  }
+}
+
+// Update the DocIDs for a term
+async function updateTermDocs(term, docIds) {
+  await db.ref(`/test/${term}`).update({ DocsIDs: docIds });
+}
+
+// Add a new DocID to a term
+async function addNewDocId() {
+  const term = document.getElementById("editTerm").value.trim().toLowerCase();
+  const newDocTitle = document.getElementById("newDocTitle").value.trim();
+  const newDocURL = document.getElementById("newDocUrl").value.trim();
+  const newDocOccurrence = parseInt(document.getElementById("newDocOccurrence").value.trim(), 10);
+
+  if (!newDocURL || !newDocTitle || isNaN(newDocOccurrence)) {
+    alert("Please enter valid DocID information.");
+    return;
+  }
+
+  const newDoc = { title: newDocTitle, url: newDocURL, occuranceNumber: newDocOccurrence };
+  const docIds = await fetchCurrentDocIds(term);
+  docIds.push(newDoc);
+  await updateTermDocs(term, docIds);
+  fetchTermDetails();
+  alert("DocID added successfully.");
+  document.getElementById("newDocTitle").value = '';
+  document.getElementById("newDocUrl").value = '';
+  document.getElementById("newDocOccurrence").value = '';
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  const addDocIdButton = document.getElementById("addDocIdButton");
+  if (addDocIdButton) {
+    addDocIdButton.addEventListener("click", addNewDocId);
+  }
+
+  const initialTermInput = document.getElementById("editTerm");
+  if (initialTermInput) {
+    initialTermInput.addEventListener("keyup", function(event) {
+      if (event.key === "Enter") {
+        fetchTermDetails();
+      }
+    });
+  }
+});
+
+
+
+////////////////////////////edit section/////////////////////////////////////////////

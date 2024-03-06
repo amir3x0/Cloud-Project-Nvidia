@@ -1,24 +1,4 @@
-fakeDatabase = {
-  GPU: [
-    "https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/",
-    "https://www.nvidia.com/en-us/geforce/",
-    "https://www.nvidia.com/en-us/gpu-cloud/",
-  ],
-  AI: [
-    "https://www.nvidia.com/en-us/deep-learning-ai/",
-    "https://www.nvidia.com/en-us/omniverse/",
-  ],
-  Driver: [
-    "https://www.nvidia.com/en-us/drivers/",
-    "https://www.nvidia.com/Download/index.aspx",
-  ],
-  Technology: [
-    "https://www.nvidia.com/en-us/",
-    "https://www.nvidia.com/en-us/technologies/",
-    "https://www.nvidia.com/en-us/industries/",
-  ],
-  RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
-};
+// This is the main script file for the project
 
 let currentPage = 1;
 let linksPerPage = 5; // Default links per page

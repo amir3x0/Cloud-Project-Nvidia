@@ -459,7 +459,7 @@ body {
 }
 
 #pagination button:active {
-  background-color: #8a3c17;
+  background-color: #591919;
   transform: translateY(2px); /* Push effect */
 }
 
@@ -514,5 +514,41 @@ body {
 .doc-term {
   font-weight: bold;
   color: #28a745;
+}
+
+.activebtn {
+  background-color: #007bff;
+}
+
+/* Statistics Style */
+#statsContainer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 5em;
+  margin-top: 5em;
+}
+#statsContainer th, #statsContainer td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  font-weight: bold;
+}
+#statsContainer tr:nth-child(even) {
+  background-color: #f2f2f2;
+  color: black;
+}
+#statsContainer th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  color: white;
+}
+#chartContainer {
+  display: flex;
+  height: 20em;
+  justify-content: space-around;
+}
+.chartWrapper {
+  flex: 1;
+  padding: 10px; 
 }
 

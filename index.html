@@ -1,92 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nvidia Search Engine</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyAZvGft4R9ax1o2XNk4FmJ2X07WuvUyNO4",
-        authDomain: "class-presentation-79426.firebaseapp.com",
-        databaseURL: "https://class-presentation-79426-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "class-presentation-79426",
-        storageBucket: "class-presentation-79426.appspot.com",
-        messagingSenderId: "698863119421",
-        appId: "1:698863119421:web:5ad514ecb5f35bc9d80e54",
-        measurementId: "G-HLSHVVW5K1",
-      };
-      firebase.initializeApp(firebaseConfig);
-      var db = firebase.database();
-    </script>
-    <style></style>
-  </head>
 
-  <body class="light-theme">
-    <div class="wrapper">
-      <div class="navbar">
-        <div class="logo">
-          <i class="fas fa-microchip"></i>
-          <span>Nvidia Search Engine</span>
-        </div>
-        <div class="nav-links">
-          <a onclick="switchPage('searchPage')">Search</a>
-          <div class="dropdown">
-            <span class="dropbtn">Index</span>
-            <div class="dropdown-content">
-              <a onclick="switchPage('addIndexPage')">Add New Index</a>
-              <a onclick="switchPage('editIndexPage')">Edit Index</a>
-            </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nvidia Search Engine</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZvGft4R9ax1o2XNk4FmJ2X07WuvUyNO4",
+      authDomain: "class-presentation-79426.firebaseapp.com",
+      databaseURL: "https://class-presentation-79426-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "class-presentation-79426",
+      storageBucket: "class-presentation-79426.appspot.com",
+      messagingSenderId: "698863119421",
+      appId: "1:698863119421:web:5ad514ecb5f35bc9d80e54",
+      measurementId: "G-HLSHVVW5K1",
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style></style>
+</head>
+
+<body class="light-theme">
+  <div class="wrapper">
+    <div class="navbar">
+      <div class="logo">
+        <i class="fas fa-microchip"></i>
+        <span>Nvidia Search Engine</span>
+      </div>
+      <div class="nav-links">
+        <a onclick="switchPage('searchPage')">Search</a>
+        <div class="dropdown">
+          <span class="dropbtn">Index</span>
+          <div class="dropdown-content">
+            <a onclick="switchPage('addIndexPage')">Add New Index</a>
+            <a onclick="switchPage('editIndexPage')">Edit Index</a>
           </div>
-          <a onclick="switchPage('statisticsPage')">Statistics</a>
-          <span class="theme-toggle" onclick="toggleTheme()">Toggle Theme</span>
         </div>
+        <a onclick="switchPage('statisticsPage')">Statistics</a>
+        <span class="theme-toggle" onclick="toggleTheme()">Toggle Theme</span>
       </div>
+    </div>
 
-      <div id="searchPage" class="search-container active">
-        <input
-          type="text"
-          id="searchQuery"
-          class="search-box"
-          placeholder="Search Nvidia products, news, or information..."
-        />
+    <div id="searchPage" class="search-container active">
+      <input type="text" id="searchQuery" class="search-box"
+        placeholder="Search Nvidia products, news, or information..." />
 
-        <button
-          id="searchButton"
-          onclick="toggleLinksPerPageVisibility(); search();"
-          class="search-button"
-        >
-          Search
-        </button>
-        <button
-          onclick="clearSearch()"
-          class="clear-button"
-          style="background-color: #888"
-        >
-          Clear
-        </button>
-        <div id="searchResults" class="search-results"></div>
+      <button id="searchButton" onclick="toggleLinksPerPageVisibility(); search();" class="search-button">
+        Search
+      </button>
+      <button onclick="clearSearch()" class="clear-button" style="background-color: #888">
+        Clear
+      </button>
+      <div id="searchResults" class="search-results"></div>
 
-        <!-- Pagination Controls -->
-        <div id="pagination"></div>
-      </div>
-      <!-- Dropdown for selecting number of links per page -->
-      <div id="linksPerPageContainer">
-        <span id="linksPerPageText">Links per page:</span>
-        <select id="linksPerPage" onchange="search()">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="50">50</option>
-        </select>
-      </div>
+      <!-- Pagination Controls -->
+      <div id="pagination"></div>
+    </div>
+    <!-- Dropdown for selecting number of links per page -->
+    <div id="linksPerPageContainer">
+      <span id="linksPerPageText">Links per page:</span>
+      <select id="linksPerPage" onchange="search()">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
 
       <div id="editIndexPage" class="container">
         <h2>Edit Index</h2>
@@ -105,58 +93,51 @@
         </div>
         <h2 id="editMessage"></h2>
     </div>
-    
-      
-      
-      
 
-      <div id="addIndexPage" class="container">
-        <h2>Add term</h2>
-        <div class="form-container">
-          <input
-            type="text"
-            id="newTerm"
-            class="input-field"
-            placeholder="New term"
-          />
-          <input
-            type="text"
-            id="docIds"
-            class="input-field"
-            placeholder="DocIDs (comma-separated)"
-          />
-          <button class="btn" onclick="addTerm()">Add Term</button>
-        </div>
-        <h2 id="addMessage"></h2>
+
+    <div id="addIndexPage" class="container">
+      <h2>Add term</h2>
+      <div class="form-container">
+        <input type="text" id="newTerm" class="input-field" placeholder="New term" />
+        <input type="text" id="docIds" class="input-field" placeholder="DocIDs (comma-separated)" />
+        <button class="btn" onclick="addTerm()">Add Term</button>
       </div>
+      <h2 id="addMessage"></h2>
+    </div>
 
-      <div id="statisticsPage" class="container">
-        <h2 class="stats-header">Index Statistics</h2>
-        <div class="stats-list">
-          <p id="totalTerms">Total Terms: Calculating...</p>
-          <p id="termMostLinks">Term with Most Links: Calculating...</p>
-          <p id="totalLinks">Total Links: Calculating...</p>
-          <p id="ascriptsPerTerm">Average Links per Term: Calculating...</p>
-        </div>
-      </div>
-
-      <!-- Footer -->
-      <div class="footer">
-        <div class="copyright">
-          <p>&copy; Braude's Nvidia Search Engine. All rights reserved.</p>
-        </div>
-        <div class="footer-options">
-          <button onclick="changeFontSize('increase')">
-            Increase Font Size
-          </button>
-          <button onclick="changeFontSize('decrease')">
-            Decrease Font Size
-          </button>
+    <div id="statisticsPage" class="container">
+      <div id="statsContainer">
+        <h1>Data Statistics</h1>
+        <div id="statsTable"></div>
+        <div id="chartContainer">
+          <div class="chartWrapper">
+            <canvas id="commonTermsChart"></canvas>
+          </div>
+          <div class="chartWrapper">
+            <canvas id="commonLinksChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
 
-    <script src="script.js"></script>
-    <!-- <script src="./frontend/api.js"></script> -->
-  </body>
+    <!-- Footer -->
+    <div class="footer">
+      <div class="copyright">
+        <p>&copy; Braude's Nvidia Search Engine. All rights reserved.</p>
+      </div>
+      <div class="footer-options">
+        <button onclick="changeFontSize('increase')">
+          Increase Font Size
+        </button>
+        <button onclick="changeFontSize('decrease')">
+          Decrease Font Size
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <!-- <script src="./frontend/api.js"></script> -->
+</body>
+
 </html>

@@ -166,6 +166,7 @@ function switchPage(pageId) {
   }, 10);
 }
 
+
 switchPage("searchPage");
 
 // Example implementation for the Edit Index page

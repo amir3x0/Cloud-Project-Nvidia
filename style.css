@@ -275,12 +275,19 @@ body {
   margin-top: 10px;
 }
 
+.success, .error {
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
 .success {
-  color: #76b900; /* Success green */
+  background-color: var(--button-background-color); /* Success messages in Nvidia green */
 }
 
 .error {
-  color: #ff3333; /* Error red */
+  background-color: var(--error-color); /* Error messages in bright red for attention */
 }
 
 /* Additional styles for editable DocID URLs */
@@ -309,6 +316,7 @@ body {
 }
 
 .edit-controls {
+  margin: 0 5px; /* Adjust spacing around control buttons */
   margin-top: 20px;
   display: flex;
   justify-content: space-around; /* Evenly space the add/remove buttons */
@@ -317,11 +325,14 @@ body {
 .btn {
   background-color: var(--button-background-color);
   color: var(--button-text-color);
+  transition: background-color 0.2s, transform 0.1s; /* Smoother transitions */
   /* Other button styles remain unchanged */
 }
 
 .btn:hover {
   opacity: 0.9; /* Slightly lower opacity for hover effect */
+  background-color: #5a8e00; /* Slightly darker green on hover */
+  transform: scale(1.05); /* Subtle grow effect */
 }
 
 .input-field, .btn {
@@ -333,6 +344,16 @@ body {
   color: var(--text-color);
 }
 
+.editIndexPage-container .editable-docid, .doc-ids-container {
+  background-color: var(--background-color); /* Slightly darker for focus */
+  border: 1px solid var(--border-color); /* Defined borders for separation */
+}
+
+.editable-docid:focus, .editable-content:focus, .editable-url:focus {
+  background-color: #333; /* Darker focus state for contrast */
+  color: var(--button-text-color);
+  border-color: var(--link-color); /* Nvidia green border on focus */
+}
 
 /* End admin page styles */
 

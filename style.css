@@ -165,7 +165,19 @@ body {
   position: relative;
   transition: color 0.3s ease;
 }
+.top-image {
+            position: absolute;
+            top: 0;
+            left: 50%; /* Adjust as needed */
+            transform: translateX(-50%);
+            z-index: 1; /* Ensure it's above other content */
+        }
 
+        /* Optional styles to center horizontally */
+        .container {
+            position: relative;
+            text-align: center;
+        }
 /* Cool animation effect for hover */
 .navbar .nav-links a::after,
 .navbar .nav-links .dropbtn::after,

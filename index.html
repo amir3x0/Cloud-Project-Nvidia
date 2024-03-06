@@ -29,8 +29,16 @@
 </head>
 
 <body class="light-theme">
+
+    <div id="content-container">
+        <img class="top-image" id="image" src="frontend/salamandra.png" alt="Top Image">
+        <div class="text-logo" id="text-logo" onclick="switchPage('searchPage')">Salamandra</div>
+    </div>
+
   <div class="wrapper">
+    
     <div class="navbar">
+      
       <div class="logo">
         <i class="fas fa-microchip"></i>
         <span>Nvidia Search Engine</span>
@@ -52,6 +60,8 @@
     <div class="container">
         <img class="top-image" src="/frontend/salamandra.png" alt="Top Image">
     </div>
+
+
 
     <div id="searchPage" class="search-container active">
       <input type="text" id="searchQuery" class="search-box"
@@ -110,15 +120,15 @@
     </div>
 
     <div id="statisticsPage" class="container">
-      <div id="statsContainer">
+      <div id="statsContainer" >
         <h1>Data Statistics</h1>
-        <div id="statsTable"></div>
-        <div id="chartContainer">
+        <div id="statsTable" ></div>
+        <div id="chartContainer" >
           <div class="chartWrapper">
             <canvas id="commonTermsChart"></canvas>
           </div>
-          <div class="chartWrapper">
-            <canvas id="commonLinksChart"></canvas>
+          <div class="chartWrapper " >
+            <canvas id="commonLinksChart" ></canvas>
           </div>
         </div>
       </div>

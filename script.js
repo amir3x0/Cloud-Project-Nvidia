@@ -20,6 +20,7 @@ fakeDatabase = {
   RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
 };
 
+
 let currentPage = 1;
 let linksPerPage = 5; // Default links per page
 let allMatchingLinks = []; // Moved to a global scope

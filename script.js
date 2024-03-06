@@ -22,86 +22,86 @@ fakeDatabase = {
 
 let currentPage = 1;
 let linksPerPage = 5; // Default links per page
+let allMatchingLinks = []; // Moved to a global scope
 
 async function search() {
+  currentPage = 1; // Reset to first page for every new search
   const query = document.getElementById("searchQuery").value.trim().toUpperCase();
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 
-  linksPerPage = parseInt(document.getElementById("linksPerPage").value);
-  let allMatchingLinks = [];
+  linksPerPage = parseInt(document.getElementById("linksPerPage").value) || 5;
+  allMatchingLinks = []; // Reset for new search
 
   const results = await searchTerms(query);
 
   if (results.length > 0) {
     results.forEach((result) => {
-      let docsHtml = "";
-      result.DocsIDs.forEach((doc) => {
-        docsHtml += `<div class="doc">
-                       <a href="${doc.url}" target="_blank" class="doc-url">
-                        <div class="doc-info"> <span class="doc-title">${doc.title}</span> <span class="doc-term">[${result.Term}] </span> <span class="doc-occurrences">(${doc.occuranceNumber} occurrences)</span></div>
-                        <div class="doc-url"> ${doc.url} </div> 
-                       </a>
-                     </div>`;
-      });
-      resultsContainer.innerHTML += `<div>${docsHtml}</div>`;
+      let docs = result.DocsIDs.map((doc) => ({
+        term: result.Term,
+        title: doc.title,
+        url: doc.url,
+        occuranceNumber: doc.occuranceNumber,
+      }));
+      allMatchingLinks = allMatchingLinks.concat(docs);
     });
+
+    const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
+    displayPage(currentPage); // Now only currentPage is needed as parameter
+    setupPagination(totalPages);
   } else {
-    resultsContainer.innerHTML += `<div>No results found for "<span class="term">${query}</span>".</div>`;
+    resultsContainer.innerHTML = `<div>No results found for "<span class=\"term\">${query}</span>".</div>`;
+    document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
   }
-
-  // Object.keys(fakeDatabase).forEach((term) => {
-  //   if (term.toUpperCase().includes(query)) {
-  //     allMatchingLinks = allMatchingLinks.concat(
-  //       fakeDatabase[term].map((link) => {
-  //         return { term: term, link: link };
-  //       })
-  //     );
-  //   }
-  // });
-
-  // if (allMatchingLinks.length === 0) {
-  //   // Display a prepared message when no results are found
-  //   resultsContainer.innerHTML = `<div class="no-results">We couldn't find any results for "${query}". Please try another search.</div>`;
-  //   document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
-  // } else {
-  //   const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
-  //   displayPage(allMatchingLinks, currentPage, linksPerPage);
-  //   setupPagination(totalPages);
-  // }
 }
 
-function displayPage(allMatchingLinks, page, linksPerPage) {
+function displayPage(page) {
   const start = (page - 1) * linksPerPage;
   const end = start + linksPerPage;
   const pageLinks = allMatchingLinks.slice(start, end);
 
   const resultsContainer = document.getElementById("searchResults");
-  resultsContainer.innerHTML = "";
+  resultsContainer.innerHTML = ""; // Clear previous results
 
-  pageLinks.forEach(({ term, link }) => {
-    const linkElement = document.createElement("a");
-    linkElement.href = link;
-    linkElement.target = "_blank";
-    linkElement.innerHTML = `<span class="result-title">${term}:</span> ${link}`;
-    resultsContainer.appendChild(linkElement);
+  pageLinks.forEach(({ term, title, url, occuranceNumber }) => {
+    const docHtml = `<div class="doc">
+                       <a href="${url}" target="_blank" class="doc-url">
+                        <div class="doc-info"><span class="doc-title">${title}</span> <span class="doc-term">[${term}]</span> <span class="doc-occurrences">(${occuranceNumber} occurrences)</span></div>
+                        <div>${url}</div>
+                       </a>
+                     </div>`;
+    resultsContainer.innerHTML += docHtml;
   });
 }
 
 function setupPagination(totalPages) {
   const paginationContainer = document.getElementById("pagination");
-  paginationContainer.innerHTML = "";
+  paginationContainer.innerHTML = ""; // Clear previous pagination
 
   for (let i = 1; i <= totalPages; i++) {
     const pageLink = document.createElement("button");
+    pageLink.className = "pagination-btn";
     pageLink.textContent = i;
     pageLink.onclick = function () {
       currentPage = i;
-      search();
+      displayPage(currentPage);
+      updateActiveButton(currentPage);
     };
     paginationContainer.appendChild(pageLink);
   }
 }
+
+function updateActiveButton(activePageIndex) {
+  const buttons = paginationContainer.querySelectorAll(".pagination-btn");
+  buttons.forEach((button, index) => {
+    if (index === activePageIndex) {
+      button.classList.add("active");
+    } else {
+      button.classList.remove("active");
+    }
+  });
+}
+
 
 // New clearSearch function
 function clearSearch() {
@@ -264,6 +264,7 @@ function changeFontSize(action) {
   };
 }
 
+// Function to search a query in database. Returns a dict of matches.
 async function searchTerms(searchQueryString) {
   const results = [];
 

@@ -137,7 +137,7 @@ body {
 .search-results a {
   display: block;
   color: var(--link-color);
-  padding: 5px;
+  padding: 0.8em;
   border-radius: 4px;
   transition: background-color 0.2s ease-in-out;
   text-decoration: none;
@@ -146,6 +146,7 @@ body {
 .search-results a:hover {
   background-color: var(--button-background-color);
   color: var(--button-text-color);
+  border-radius: 17px;
 }
 .result-title {
   font-weight: bold;
@@ -389,12 +390,13 @@ a {
 }
 
 #pagination button:hover {
-  background-color: #5a8e00; /* Darker green */
+  background-color: #3e5517; /* Darker green */
   transform: translateY(-2px); /* Slight lift */
 }
 
 #pagination button:active {
-  transform: translateY(1px); /* Push effect */
+  background-color: #8a3c17;
+  transform: translateY(2px); /* Push effect */
 }
 
 /* Adjusting the select dropdown to match the Nvidia theme */

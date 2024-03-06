@@ -20,14 +20,16 @@ fakeDatabase = {
   RTX: ["https://www.nvidia.com/en-us/geforce/rtx/"],
 };
 
-
 let currentPage = 1;
-let linksPerPage = 5; // Default links per page
-let allMatchingLinks = []; // Moved to a global scope
+let linksPerPage = 5;
+let allMatchingLinks = [];
 
 async function search() {
   currentPage = 1; // Reset to first page for every new search
-  const query = document.getElementById("searchQuery").value.trim().toLowerCase();
+  const query = document
+    .getElementById("searchQuery")
+    .value.trim()
+    .toLowerCase();
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 
@@ -46,6 +48,9 @@ async function search() {
       }));
       allMatchingLinks = allMatchingLinks.concat(docs);
     });
+
+    // Sort allMatchingLinks by occuranceNumber, highest first
+    allMatchingLinks.sort((a, b) => b.occuranceNumber - a.occuranceNumber);
 
     const totalPages = Math.ceil(allMatchingLinks.length / linksPerPage);
     displayPage(currentPage); // Now only currentPage is needed as parameter
@@ -92,13 +97,13 @@ function setupPagination(totalPages) {
   }
 }
 
-function updateActiveButton(activePageIndex) {
-  const buttons = paginationContainer.querySelectorAll(".pagination-btn");
-  buttons.forEach((button, index) => {
-    if (index === activePageIndex) {
-      button.classList.add("active");
+function updateActiveButton(activePageNumber) {
+  const buttons = paginationContainer.querySelectorAll("pagination-btn");
+  buttons.forEach((button) => {
+    if (parseInt(button.textContent) === activePageNumber) {
+      button.classList.add("activebtn");
     } else {
-      button.classList.remove("active");
+      button.classList.remove("activebtn");
     }
   });
 }
@@ -116,33 +121,152 @@ function toggleTheme() {
   document.body.classList.toggle("light-theme");
 }
 
-function calcStats() {
-  let totalTerms = Object.keys(fakeDatabase).length;
+async function calcStats() {
+  const allData = await searchTerms("__all");
+  let totalTerms = allData.length;
   let totalLinks = 0;
   let termWithMostLinks = "";
   let maxLinksCount = 0;
+  let termFrequencies = {};
+  let linkOccurrences = {};
 
-  Object.keys(fakeDatabase).forEach((term) => {
-    const linksCount = fakeDatabase[term].length;
+  // Runs on all of the index
+  allData.forEach((entry) => {
+    const linksCount = entry.DocsIDs.length; // Assuming the property is DocsIDs
     totalLinks += linksCount;
+    termFrequencies[entry.Term] =
+      (termFrequencies[entry.Term] || 0) + linksCount;
     if (linksCount > maxLinksCount) {
       maxLinksCount = linksCount;
-      termWithMostLinks = term;
+      termWithMostLinks = entry.Term; // Corrected to use entry.Term
     }
+
+    // Runs on every link for every term
+    entry.DocsIDs.forEach((doc) => {
+      termFrequencies[entry.Term] =
+        (termFrequencies[entry.Term] || 0) + doc.occuranceNumber;
+      if (!linkOccurrences[doc.url]) {
+        linkOccurrences[doc.url] = { count: 0, title: doc.title };
+      }
+      linkOccurrences[doc.url].count += doc.occuranceNumber;
+    });
   });
 
-  document.getElementById(
-    "totalTerms"
-  ).textContent = `Total Terms: ${totalTerms}`;
-  document.getElementById(
-    "termMostLinks"
-  ).textContent = `Term with Most Links: ${termWithMostLinks} (${maxLinksCount} links)`;
-  document.getElementById(
-    "totalLinks"
-  ).textContent = `Total Links: ${totalLinks}`;
-  document.getElementById(
-    "avgLinksPerTerm"
-  ).textContent = `Average Links per Term: ${avgLinksPerTerm.toFixed(2)}`;
+  // Calculate the average links per term, ensuring not to divide by zero
+  let avgLinksPerTerm = totalTerms > 0 ? totalLinks / totalTerms : 0;
+
+  // Convert termFrequencies and linkOccurrences to arrays and sort them
+  let sortedTermFrequencies = Object.entries(termFrequencies)
+    .map(([term, count]) => ({ term, count }))
+    .sort((a, b) => b.count - a.count) // Corrected sorting function
+    .slice(0, 10); // Get top 10 most common terms by occurrences
+
+  let sortedLinkOccurrences = Object.entries(linkOccurrences)
+    .map(([url, data]) => ({ url, count: data.count, title: data.title }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10); // Get top 10 most common links
+
+  const statsData = {
+    totalTerms,
+    totalLinks,
+    termWithMostLinks,
+    maxLinksCount,
+    avgLinksPerTerm,
+  };
+  renderStatsTable(statsData);
+  renderCommonTermsChart(sortedTermFrequencies);
+  renderCommonLinksChart(sortedLinkOccurrences);
+}
+
+function renderCommonTermsChart(commonTermsData) {
+  const ctx = document.getElementById("commonTermsChart").getContext("2d");
+  const chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: commonTermsData.map((data) => data.term),
+      datasets: [
+        {
+          label: "Appearances",
+          data: commonTermsData.map((data) => data.count),
+          backgroundColor: "rgba(153, 102, 255, 0.2)",
+          borderColor: "rgba(153, 102, 255, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "Most Common Terms",
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+}
+
+function renderCommonLinksChart(commonLinksData) {
+  const ctx = document.getElementById("commonLinksChart").getContext("2d");
+  const chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: commonLinksData.map((data) => {
+        // Split title into words, take the first three, and join them back into a string
+        const trimmedTitle = data.title.split(" ").slice(0, 2).join(" ");
+        // Optional: Add an ellipsis if the original title had more than three words
+        return data.title.split(" ").length > 3
+          ? `${trimmedTitle}...`
+          : trimmedTitle;
+      }),
+      datasets: [
+        {
+          label: "Link Appearances",
+          data: commonLinksData.map((data) => data.count),
+          backgroundColor: "rgba(255, 159, 64, 0.2)",
+          borderColor: "rgba(255, 159, 64, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "Most Common Links",
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+}
+
+function renderStatsTable({
+  totalTerms,
+  totalLinks,
+  termWithMostLinks,
+  maxLinksCount,
+  avgLinksPerTerm,
+}) {
+  const tableHtml = `
+    <table>
+      <tr><th>Total Terms</th><td>${totalTerms}</td></tr>
+      <tr><th>Total Links</th><td>${totalLinks}</td></tr>
+      <tr><th>Term with Most Links</th><td>${termWithMostLinks} (${maxLinksCount} links)</td></tr>
+      <tr><th>Average Links per Term</th><td>${avgLinksPerTerm.toFixed(
+        2
+      )}</td></tr>
+    </table>
+  `;
+  document.getElementById("statsTable").innerHTML = tableHtml;
 }
 
 function switchPage(pageId) {
@@ -165,8 +289,6 @@ function switchPage(pageId) {
     activePage.classList.add("fade-in");
   }, 10);
 }
-
-
 switchPage("searchPage");
 
 // Example implementation for the Edit Index page
@@ -282,19 +404,27 @@ async function searchTerms(searchQueryString) {
   const snapshot = await db.ref("/test").once("value");
 
   if (snapshot.exists()) {
-    snapshot.forEach((childSnapshot) => {
-      const data = childSnapshot.val();
+    if (searchQueryString === "__all") {
+      // Return all entries
+      snapshot.forEach((childSnapshot) => {
+        const data = childSnapshot.val();
+        results.push(data);
+      });
+    } else {
+      // Searchs for matches
+      snapshot.forEach((childSnapshot) => {
+        const data = childSnapshot.val();
 
-      // Check if any word in the search query matches the Term, ignoring case
-      // Convert both to lowercase for case-insensitive comparison
-      if (data && data.Term && words.includes(data.Term.toLowerCase())) {
-        if (data.DocsIDs && data.DocsIDs.length > 0) {
-          // Push the whole data object if a match is found
-          results.push(data);
+        // Check if any word in the search query matches the Term, ignoring case
+        // Convert both to lowercase for case-insensitive comparison
+        if (data && data.Term && words.includes(data.Term.toLowerCase())) {
+          if (data.DocsIDs && data.DocsIDs.length > 0) {
+            // Push the whole data object if a match is found
+            results.push(data);
+          }
         }
-      }
-    });
+      });
+    }
   }
-
   return results;
 }

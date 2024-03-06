@@ -26,7 +26,7 @@ let allMatchingLinks = []; // Moved to a global scope
 
 async function search() {
   currentPage = 1; // Reset to first page for every new search
-  const query = document.getElementById("searchQuery").value.trim().toUpperCase();
+  const query = document.getElementById("searchQuery").value.trim().toLowerCase();
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 

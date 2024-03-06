@@ -139,13 +139,12 @@ body {
   color: var(--link-color);
   padding: 0.8em;
   border-radius: 4px;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.15s ease-in-out;
   text-decoration: none;
   margin-bottom: 5px;
 }
 .search-results a:hover {
-  background-color: var(--button-background-color);
-  color: var(--button-text-color);
+  background-color: #9ae8af;
   border-radius: 17px;
 }
 .result-title {
@@ -207,11 +206,11 @@ body {
   display: none;
   position: absolute;
   background-color: var(--dropdown-background-color);
-  min-width: 160px;
+  min-width: 180px;
+  min-height: 100px;
+  padding-top: 10px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  padding: 12px 16px;
-  z-index: 1;
-  border-radius: 5px;
+  border-radius: 10px;
 }
 :root .dropdown-content a {
   color: black; /* Set the default color for light mode */
@@ -222,8 +221,8 @@ body {
 }
 .dropdown-content a {
   color: var(--dropdown-text-color);
-  padding: 12px 16px;
   text-decoration: none;
+  padding: 12px 0px;
   display: block;
   transition: background-color 0.2s ease-in-out;
 }
@@ -431,6 +430,9 @@ a {
   margin-bottom: 20px;
   padding: 15px;
   border-radius: 8px;
+}
+.doc:hover {
+  .doc-term { color: #170d37; }
 }
 .doc-title {
   color: #007bff;

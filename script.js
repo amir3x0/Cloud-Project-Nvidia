@@ -102,8 +102,7 @@ function updateActiveButton(activePageIndex) {
   });
 }
 
-
-// New clearSearch function
+// Clear Search function
 function clearSearch() {
   document.getElementById("searchQuery").value = "";
   document.getElementById("searchResults").innerHTML = "";

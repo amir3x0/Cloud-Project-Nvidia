@@ -168,7 +168,6 @@ body {
 
 .containerlogo {
   position: absolute; 
-  width: 100%; 
 }
 
 .top-image {
@@ -181,6 +180,8 @@ body {
   font-weight: bold; 
   color: rgb(68, 248, 68);
   position: relative;
+  margin: 0 auto; 
+  display: block;
   top: -120px; 
   left: 50%; 
   transform: translateX(-50%); 

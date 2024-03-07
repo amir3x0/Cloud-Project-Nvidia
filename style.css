@@ -166,14 +166,24 @@ body {
   transition: color 0.3s ease;
 }
 
-.containerlogo {
-  text-align: center; 
+.containerlogo {  
+  width: 200px; 
+  margin: 0 auto; 
+  display: block;
+  position: relative;
+  top: -20px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  cursor: pointer;
+  
+
 }
 
 .top-image {
   width: 200px; 
   margin: 0 auto; 
   display: block;
+  transition: transform 0.3s, font-size 0.3s; 
 }
 .text-logo{
   font-size: 35px;
@@ -190,7 +200,7 @@ body {
   -1px 1px 0 #000,
   2px 2px 0 #000; 
   cursor: pointer;
-  transition: transform 0.3s, font-size 0.3s; 
+  transition: transform 0.3s, font-size 0.3s;
 }
 .text-logo:hover {
   font-size: 36px; 
@@ -404,7 +414,7 @@ body {
   align-items: center;
   border-radius: 10px;
   margin-top: 64px; /* Additional margin at the top */
-  width: 99%;
+  width: 100%;
 }
 .footer-options button {
   background-color: var(--button-background-color);

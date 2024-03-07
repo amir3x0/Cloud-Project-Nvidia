@@ -172,6 +172,7 @@ body {
 
 .top-image {
   width: 200px; 
+  margin: 0 auto; /* Center the image horizontally */
 
 }
 .text-logo{

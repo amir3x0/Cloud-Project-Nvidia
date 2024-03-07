@@ -168,12 +168,13 @@ body {
 
 .containerlogo {
   position: absolute; 
+  width: 100%; 
 }
 
 .top-image {
   width: 200px; 
-  margin: 0 auto; /* Center the image horizontally */
-
+  margin: 0 auto; 
+  display: block;
 }
 .text-logo{
   font-size: 35px;

@@ -547,6 +547,7 @@ async function call(function_name) {
   } else if (outputString === 'None'){
     return null;
    }
+   console.log("outputString: " + outputString)
   return outputString;
 }
 

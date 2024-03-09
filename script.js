@@ -537,9 +537,24 @@ async function addNewDocId() {
 }
 
 /// Chatbot ///
+async function call(function_name) {
+  args = [...arguments].splice(1)
+  var res = await google.colab.kernel.invokeFunction(function_name, args, {})
+  if (res == null) { return }
+  const outputString = res.data['text/plain'].split("'").join("").trim();
+  if (outputString === 'True') {
+    return true;
+  } else if (outputString === 'False') {
+    return false;
+  } else if (outputString === 'None'){
+    return null;
+   }
+  return outputString;
+}
+
 async function chat() {
-  var res = await google.colab.kernel.invokeFunction(function_name, [...arguments], {})
-  return res
+  let returned = call('chat');
+  document.getElementById("chatReturn").value = returned;
 }
 
 ////////////////////////////edit section/////////////////////////////////////////////

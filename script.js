@@ -547,12 +547,12 @@ async function call(function_name) {
   } else if (outputString === 'None'){
     return null;
    }
-   console.log("outputString: " + outputString)
   return outputString;
 }
 
 async function chat(msg) {
-  let response = await call('chat', msg);
+  let response = await call('chat', msg)
+  console.log(response)
   return response;
 }
 

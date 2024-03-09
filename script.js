@@ -536,7 +536,6 @@ async function addNewDocId() {
 /// Chatbot ///
 async function call(function_name) {
   args = [...arguments].splice(1)
-  console.log(function_name, args);
   var res = await google.colab.kernel.invokeFunction(function_name, args, {})
   if (res == null) { return }
   const outputString = res.data['text/plain'].split("'").join("").trim();
@@ -552,7 +551,6 @@ async function call(function_name) {
 
 async function chat(msg) {
   let response = await call('chat', msg)
-  console.log(response.value)
   return response;
 }
 
@@ -594,7 +592,7 @@ class Chatbox {
       }
   }
 
-  onSendButton(chatbox) {
+  async onSendButton(chatbox) {
       var textField = chatbox.querySelector('input');
       let text1 = textField.value
       if (text1 === "") {
@@ -604,7 +602,7 @@ class Chatbox {
       let msg1 = { name: "User", message: text1 }
       this.messages.push(msg1);
 
-      let response = chat(msg1.message);
+      let response = await chat(msg1.message);
       let msg2 = { name: "Sam", message: response };
       this.messages.push(msg2);
       this.updateChatText(chatbox)

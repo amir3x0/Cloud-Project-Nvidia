@@ -601,7 +601,7 @@ class Chatbox {
       }
 
       let msg1 = { name: "User", message: text1 }
-      this.messages.push(msg1);
+      this.messages.push(msg1.message);
 
       let response = chat(msg1);
       let msg2 = { name: "Sam", message: response };

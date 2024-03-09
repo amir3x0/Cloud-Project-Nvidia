@@ -536,5 +536,11 @@ async function addNewDocId() {
   document.getElementById("newDocOccurrence").value = "";
 }
 
+/// Chatbot ///
+async function chat() {
+  var res = await google.colab.kernel.invokeFunction(function_name, [...arguments], {})
+  return res
+}
+
 ////////////////////////////edit section/////////////////////////////////////////////
 

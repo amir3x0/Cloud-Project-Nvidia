@@ -552,7 +552,7 @@ async function call(function_name) {
 
 async function chat(msg) {
   let response = await call('chat', msg)
-  console.log(response)
+  console.log(response.value)
   return response;
 }
 

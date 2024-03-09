@@ -555,7 +555,7 @@ async function call(function_name) {
 
 async function chat() {
   console.log('entered chat function')
-  let returned = await call('chat');
+  let returned = await call('chat', "arg1", "arg2");
   console.log('returned value from char function', returned);
   document.getElementById("chatReturn").value = returned;
 }

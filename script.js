@@ -539,6 +539,7 @@ async function addNewDocId() {
 /// Chatbot ///
 async function call(function_name) {
   args = [...arguments].splice(1)
+  console.log(function_name, args);
   var res = await google.colab.kernel.invokeFunction(function_name, args, {})
   if (res == null) { return }
   const outputString = res.data['text/plain'].split("'").join("").trim();

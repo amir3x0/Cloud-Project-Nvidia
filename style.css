@@ -607,12 +607,16 @@ body {
   background: #F1F1F1;
 }
 
+/*
+button-background-color
+#5a8e00
+*/ 
 *, html {
-  --primaryGradient: linear-gradient(93.12deg, #581B98 0.52%, #9C1DE7 100%);
-  --secondaryGradient: linear-gradient(268.91deg, #581B98 -2.14%, #9C1DE7 99.69%);
+  --primaryGradient: linear-gradient(93.12deg, #5a8e00 0.52%, #76b900 100%);
+  --secondaryGradient: linear-gradient(268.91deg, #5a8e00 -2.14%, #76b900 99.69%);
   --primaryBoxShadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
   --secondaryBoxShadow: 0px -10px 15px rgba(0, 0, 0, 0.1);
-  --primary: #581B98;
+  --primary: #5a8e00;
 }
 
 /* CHATBOX

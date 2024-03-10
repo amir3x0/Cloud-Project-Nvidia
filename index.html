@@ -30,10 +30,11 @@
 
 <body class="light-theme">
 
-    <div id="content-container">
-        <img class="top-image" id="image" src="https://i.ibb.co/NS2PTxd/salamandra.png" alt="Top Image">
-        <div class="text-logo" align="center" id="text-logo" onclick="switchPage('searchPage')">Salamandra</div>
-    </div>
+  <!-- top image (salamandra) -->
+  <div id="content-container">
+      <img class="top-image" id="image" src="https://i.ibb.co/NS2PTxd/salamandra.png" alt="Top Image">
+      <div class="text-logo" align="center" id="text-logo" onclick="switchPage('searchPage')">Salamandra</div>
+  </div>
 
   <div class="wrapper">
     
@@ -55,10 +56,6 @@
         <a onclick="switchPage('statisticsPage')">Statistics</a>
         <span class="theme-toggle" onclick="toggleTheme()">Toggle Theme</span>
       </div>
-    </div>
-    <!-- top image (salamandra) -->
-    <div class="container">
-        <img class="top-image" src="/frontend/salamandra.png" alt="Top Image">
     </div>
 
     <div id="searchPage" class="search-container active">
@@ -88,24 +85,23 @@
     </div>
 
 
-      <div id="editIndexPage" class="container">
-        <h2>Edit Index</h2>
-        <div class="form-container">
-            <input type="text" id="editTerm" class="input-field" placeholder="Existing term" />
-            <button class="btn" onclick="fetchTermDetails()">Fetch Term Details</button>
-            <div id="editDetails" style="display:none;">
-                <label for="docIdsContainer" class="input-label">DocIDs:</label>
-                <div id="docIdsContainer" class="doc-ids-container"></div>
-                <!-- Updated section for adding a new DocID -->
-                <input type="text" id="newDocTitle" class="input-field" placeholder="Enter new DocID title" />
-                <input type="text" id="newDocUrl" class="input-field" placeholder="Enter new DocID URL" />
-                <input type="number" id="newDocOccurrence" class="input-field" placeholder="Enter new DocID occurrence number" />
-                <button id="addDocIdButton" class="btn">+ Add DocID</button>
-            </div>
-        </div>
-        <h2 id="editMessage"></h2>
+    <div id="editIndexPage" class="container">
+      <h2>Edit Index</h2>
+      <div class="form-container">
+          <input type="text" id="editTerm" class="input-field" placeholder="Existing term" />
+          <button class="btn" onclick="fetchTermDetails()">Fetch Term Details</button>
+          <div id="editDetails" style="display:none;">
+              <label for="docIdsContainer" class="input-label">DocIDs:</label>
+              <div id="docIdsContainer" class="doc-ids-container"></div>
+              <!-- Updated section for adding a new DocID -->
+              <input type="text" id="newDocTitle" class="input-field" placeholder="Enter new DocID title" />
+              <input type="text" id="newDocUrl" class="input-field" placeholder="Enter new DocID URL" />
+              <input type="number" id="newDocOccurrence" class="input-field" placeholder="Enter new DocID occurrence number" />
+              <button id="addDocIdButton" class="btn">+ Add DocID</button>
+          </div>
+      </div>
+      <h2 id="editMessage"></h2>
     </div>
-
 
     <div id="addIndexPage" class="container">
       <h2>Add term</h2>
@@ -167,7 +163,9 @@
           </div>
       </div>
       <div class="chatbox__button">
-          <button><img src="./images/chatbox-icon.svg" /></button>
+          <button>
+            <img src="https://i.ibb.co/nDxy1tt/icons8-chat-50.png" alt="icons8-chat-50" border="0"/>
+          </button>
       </div>
     </div>
 

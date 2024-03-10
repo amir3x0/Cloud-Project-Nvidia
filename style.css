@@ -56,7 +56,7 @@ body {
   background-color: var(--navbar-background-color);
   color: var(--navbar-text-color);
   padding: 10px 50px;
-  width: 90.8%;
+  width: 100%;
 }
 .navbar .logo i {
   margin-right: 10px;

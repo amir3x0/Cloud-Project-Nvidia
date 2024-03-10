@@ -323,27 +323,52 @@ body {
 }
 
 .doc-ids-container {
-  padding: 10px;
+  overflow-x: auto;
+}
+
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.docs-table th,
+.docs-table td {
   border: 1px solid var(--border-color);
-  border-radius: 5px;
-  background-color: var(--background-color);
-  max-height: 200px; /* Limit height with overflow for long lists */
-  overflow-y: auto; /* Scrollable for many DocIDs */
-  margin-bottom: 20px;
+  padding: 8px;
+  text-align: left;
 }
 
-.editable-docid {
-  margin: 10px 0;
-  padding: 10px;
-  background-color: #e8e8e8; /* Slightly darker for editable areas */
-  border-radius: 5px;
-  border: 1px dashed var(--border-color);
+.docs-table th {
+  background-color: var(--navbar-background-color);
+  color: var(--navbar-text-color);
 }
 
-.editable-docid:focus {
-  outline: none; /* Remove default outline */
-  border-color: var(--link-color); /* NVIDIA green for focus */
-  background-color: #fff; /* Brighter background on focus */
+.docs-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.docs-table td {
+  background-color: var(--container-background-color);
+  color: var(--text-color);
+}
+
+.docs-table td[contentEditable="true"]:focus {
+  background-color: #e8f0fe;
+  outline: none;
+}
+
+.docs-table button {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.docs-table button:hover {
+  background-color: #5a8e00;
 }
 
 /* Feedback messages for success/error */

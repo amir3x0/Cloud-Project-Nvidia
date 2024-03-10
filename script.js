@@ -418,46 +418,63 @@ async function fetchTermDetails() {
   const term = termInput.value.trim().toLowerCase();
   const results = await searchTermsforEdit(term);
   const docIdsContainer = document.getElementById("docIdsContainer");
-  docIdsContainer.innerHTML = "";
+  // Reset the container and setup the table if not already present
+  docIdsContainer.innerHTML = `<table class="docs-table">
+                                  <thead>
+                                    <tr>
+                                      <th>Title</th>
+                                      <th>URL</th>
+                                      <th>Occurrences</th>
+                                      <th>Actions</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody id="docsTableBody">
+                                  </tbody>
+                                </table>`;
+  const docsTableBody = document.getElementById("docsTableBody");
 
   if (results.length === 0) {
     alert("No details found for term: " + term);
-    currentTermId = null; // Reset currentTermId as no term is found
+    currentTermId = null;
     return;
   }
 
-  // Assuming only one result will match, or taking the first match
-  currentTermId = results[0].id; // Save the termId of the fetched term
+  currentTermId = results[0].id;
   document.getElementById("test").innerHTML = currentTermId;
 
-  results.forEach((result) => {
-    result.DocsIDs.forEach((doc, index) => {
-      const docDiv = document.createElement("div");
-      docDiv.className = "doc-container";
-      docDiv.setAttribute("data-index", index);
+  results[0].DocsIDs.forEach((doc, index) => {
+    const row = document.createElement("tr");
+    row.setAttribute("data-index", index);
 
-      const docContent = `
-        <div contentEditable="true" class="editable-content" data-index="${index}">
-          ${doc.title} (${doc.occuranceNumber} occurrences)
-        </div>
-        <div contentEditable="true" class="editable-url" data-index="${index}">
-          ${doc.url}
-        </div>
-      `;
-      docDiv.innerHTML = docContent;
+    const titleCell = document.createElement("td");
+    titleCell.contentEditable = true;
+    titleCell.innerText = doc.title;
 
-      const removeBtn = document.createElement("button");
-      removeBtn.innerText = "Remove";
-      removeBtn.setAttribute("data-index", index);
-      removeBtn.onclick = () => removeDocId(result.id, index);
+    const urlCell = document.createElement("td");
+    urlCell.contentEditable = true;
+    urlCell.innerText = doc.url;
 
-      docDiv.appendChild(removeBtn);
-      docIdsContainer.appendChild(docDiv);
-    });
+    const occurrencesCell = document.createElement("td");
+    occurrencesCell.contentEditable = true;
+    occurrencesCell.innerText = doc.occuranceNumber;
+
+    const actionsCell = document.createElement("td");
+    const removeBtn = document.createElement("button");
+    removeBtn.innerText = "Remove";
+    removeBtn.onclick = () => removeDocId(currentTermId, index);
+    actionsCell.appendChild(removeBtn);
+
+    row.appendChild(titleCell);
+    row.appendChild(urlCell);
+    row.appendChild(occurrencesCell);
+    row.appendChild(actionsCell);
+
+    docsTableBody.appendChild(row);
   });
 
   document.getElementById("editDetails").style.display = "block";
 }
+
 
 async function removeDocId(termId, index) {
   try {

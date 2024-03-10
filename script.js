@@ -97,14 +97,13 @@ function toggleTheme() {
 }
 
 async function calcStats() {
-  const allData = await searchTerms("__all");
+  const allData = await searchAll();
   let totalTerms = allData.length;
   let totalLinks = 0;
   let termWithMostLinks = "";
   let maxLinksCount = 0;
   let termFrequencies = {};
   let linkOccurrences = {};
-
   // Runs on all of the index
   allData.forEach((entry) => {
     const linksCount = entry.DocsIDs.length; // Assuming the property is DocsIDs
@@ -151,6 +150,22 @@ async function calcStats() {
   renderStatsTable(statsData);
   renderCommonTermsChart(sortedTermFrequencies);
   renderCommonLinksChart(sortedLinkOccurrences);
+}
+
+async function searchAll() {
+  const results = [];
+
+  // get all index from DB
+  const snapshot = await db.ref("/test").once("value");
+
+  if (snapshot.exists()) {
+    snapshot.forEach((childSnapshot) => {
+      const data = childSnapshot.val();
+      results.push(data);
+    });
+  }
+
+  return results;
 }
 
 function renderCommonTermsChart(commonTermsData) {
@@ -236,9 +251,7 @@ function renderStatsTable({
       <tr><th>Total Terms</th><td>${totalTerms}</td></tr>
       <tr><th>Total Links</th><td>${totalLinks}</td></tr>
       <tr><th>Term with Most Links</th><td>${termWithMostLinks} (${maxLinksCount} links)</td></tr>
-      <tr><th>Average Links per Term</th><td>${avgLinksPerTerm.toFixed(
-        2
-      )}</td></tr>
+      <tr><th>Average Links per Term</th><td>${avgLinksPerTerm.toFixed(2)}</td></tr>
     </table>
   `;
   document.getElementById("statsTable").innerHTML = tableHtml;
@@ -327,7 +340,6 @@ async function searchTerms(searchQueryString) {
   const results = {};
 
   const words = searchQueryString.toLowerCase().match(/\w+/g);
-  console.log(words);
 
   if (!words || words.length === 0) {
     return []; // Return an empty array if no words are found

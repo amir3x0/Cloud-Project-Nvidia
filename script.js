@@ -5,12 +5,10 @@ let linksPerPage = 5; // Default links per page
 let allMatchingLinks = []; // Moved to a global scope
 let currentTermId = null; // This will hold the ID of the currently edited term
 
+// Function to get the query and call search in db.
 async function search() {
   currentPage = 1; // Reset to first page for every new search
-  const query = document
-    .getElementById("searchQuery")
-    .value.trim()
-    .toLowerCase();
+  const query = document.getElementById("searchQuery").value.trim().toLowerCase();
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 
@@ -36,6 +34,7 @@ async function search() {
   }
 }
 
+// Function to display a page given index.
 function displayPage(page) {
   const start = (page - 1) * linksPerPage;
   const end = start + linksPerPage;
@@ -55,6 +54,7 @@ function displayPage(page) {
   });
 }
 
+// Function to set up the search results pages.
 function setupPagination(totalPages) {
   const paginationContainer = document.getElementById("pagination");
   paginationContainer.innerHTML = ""; // Clear previous pagination
@@ -72,6 +72,7 @@ function setupPagination(totalPages) {
   }
 }
 
+// Function to update the active button of the pagination.
 function updateActiveButton(activePageNumber) {
   const buttons = paginationContainer.querySelectorAll("pagination-btn");
   buttons.forEach((button) => {
@@ -83,7 +84,29 @@ function updateActiveButton(activePageNumber) {
   });
 }
 
-// Clear Search function
+function switchPage(pageId) {
+  document
+    .querySelectorAll(".container, .search-container")
+    .forEach(function (page) {
+      page.classList.remove("active");
+    });
+  document.getElementById(pageId).classList.add("active");
+  if (pageId === "statisticsPage") {
+    calcStats();
+  }
+  page.classList.remove("active", "fade-in"); // Remove both active and fade-in classes
+
+  const activePage = document.getElementById(pageId);
+  activePage.classList.add("active");
+
+  // Delay the fade-in animation slightly to ensure it triggers upon visibility
+  setTimeout(() => {
+    activePage.classList.add("fade-in");
+  }, 10);
+}
+
+switchPage("searchPage");
+
 function clearSearch() {
   document.getElementById("searchQuery").value = "";
   document.getElementById("searchResults").innerHTML = "";
@@ -152,6 +175,7 @@ async function calcStats() {
   renderCommonLinksChart(sortedLinkOccurrences);
 }
 
+// Returns all the db in array.
 async function searchAll() {
   const results = [];
 
@@ -168,6 +192,7 @@ async function searchAll() {
   return results;
 }
 
+// Displays the Common terms chart.
 function renderCommonTermsChart(commonTermsData) {
   const ctx = document.getElementById("commonTermsChart").getContext("2d");
   const chart = new Chart(ctx, {
@@ -200,6 +225,7 @@ function renderCommonTermsChart(commonTermsData) {
   });
 }
 
+// Displays the Common links chart.
 function renderCommonLinksChart(commonLinksData) {
   const ctx = document.getElementById("commonLinksChart").getContext("2d");
   const chart = new Chart(ctx, {
@@ -239,6 +265,7 @@ function renderCommonLinksChart(commonLinksData) {
   });
 }
 
+// Displays the Statistics table.
 function renderStatsTable({
   totalTerms,
   totalLinks,
@@ -256,29 +283,6 @@ function renderStatsTable({
   `;
   document.getElementById("statsTable").innerHTML = tableHtml;
 }
-
-function switchPage(pageId) {
-  document
-    .querySelectorAll(".container, .search-container")
-    .forEach(function (page) {
-      page.classList.remove("active");
-    });
-  document.getElementById(pageId).classList.add("active");
-  if (pageId === "statisticsPage") {
-    calcStats();
-  }
-  page.classList.remove("active", "fade-in"); // Remove both active and fade-in classes
-
-  const activePage = document.getElementById(pageId);
-  activePage.classList.add("active");
-
-  // Delay the fade-in animation slightly to ensure it triggers upon visibility
-  setTimeout(() => {
-    activePage.classList.add("fade-in");
-  }, 10);
-}
-
-switchPage("searchPage");
 
 function loadTerms() {
   // This function would fetch terms from the database and display them

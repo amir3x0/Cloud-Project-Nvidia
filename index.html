@@ -44,7 +44,6 @@
         <span>Nvidia Search Engine</span>
       </div>
       <div class="nav-links">
-        <a onclick="switchPage('chatPage')">Chat</a>
         <a onclick="switchPage('searchPage')">Search</a>
         <div class="dropdown">
           <span class="dropbtn">Index</span>
@@ -60,19 +59,6 @@
     <!-- top image (salamandra) -->
     <div class="container">
         <img class="top-image" src="/frontend/salamandra.png" alt="Top Image">
-    </div>
-
-    <div id="chatPage" class="search-container active">
-      <input type="text" id="chatMsgText" class="search-box"
-        placeholder="Type Your message to the chatbot" />
-      
-      <a id="chatReturn"></a>
-
-
-      <button id="sendChatMsgButton" onclick="chat()" class="search-button">
-        Send Message
-      </button>
-      
     </div>
 
     <div id="searchPage" class="search-container active">

@@ -388,6 +388,31 @@ async function searchTerms(searchQueryString) {
   return sortedResults;
 }
 
+//////////////////////////////////edit section///////////////////////////////////////////////////////
+
+
+async function searchTermsforEdit(searchQueryString) {
+  const results = [];
+  const words = searchQueryString.toLowerCase().match(/\w+/g);
+
+  if (!words) {
+    return results;
+  }
+
+  const snapshot = await db.ref("/test").once("value");
+
+  if (snapshot.exists()) {
+    snapshot.forEach((childSnapshot) => {
+      const data = childSnapshot.val();
+      if (data.Term && words.includes(data.Term.toLowerCase())) {
+        results.push({ ...data, id: childSnapshot.key });
+      }
+    });
+  }
+
+  return results;
+}
+
 async function fetchTermDetails() {
   const termInput = document.getElementById("editTerm");
   const term = termInput.value.trim().toLowerCase();
@@ -403,6 +428,7 @@ async function fetchTermDetails() {
 
   // Assuming only one result will match, or taking the first match
   currentTermId = results[0].id; // Save the termId of the fetched term
+  document.getElementById("test").innerHTML = currentTermId;
 
   results.forEach((result) => {
     result.DocsIDs.forEach((doc, index) => {
@@ -463,34 +489,15 @@ async function fetchCurrentDocIds(termId) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const addDocIdButton = document.getElementById("addDocIdButton");
-  if (addDocIdButton) {
-    addDocIdButton.addEventListener("click", addNewDocId);
-  }
-
-  const initialTermInput = document.getElementById("editTerm");
-  if (initialTermInput) {
-    initialTermInput.addEventListener("keyup", function (event) {
-      if (event.key === "Enter") {
-        fetchTermDetails();
-      }
-    });
-  }
-});
-
 async function addNewDocId() {
   if (!currentTermId) {
     alert("No term selected for adding a new DocID.");
     return;
   }
-
+  document.getElementById("test").innerHTML = '';
   const newDocTitle = document.getElementById("newDocTitle").value.trim();
   const newDocURL = document.getElementById("newDocUrl").value.trim();
-  const newDocOccurrence = parseInt(
-    document.getElementById("newDocOccurrence").value.trim(),
-    10
-  );
+  const newDocOccurrence = parseInt(document.getElementById("newDocOccurrence").value.trim(), 10);
 
   if (!newDocURL || !newDocTitle || isNaN(newDocOccurrence)) {
     alert("Please enter valid DocID information.");
@@ -498,32 +505,30 @@ async function addNewDocId() {
   }
 
   const newDoc = {
+    occuranceNumber: newDocOccurrence,
     title: newDocTitle,
     url: newDocURL,
-    occuranceNumber: newDocOccurrence,
   };
-  console.log("Current Term ID:", currentTermId);
-  console.log("New Doc Details:", newDoc);
 
-  const docIds = await fetchCurrentDocIds(currentTermId); // Use currentTermId here
-  docIds.push(newDoc);
+  // Correct reference to fetch current DocsIDs
+  const docsRef  = db.ref(`test/${currentTermId}/DocsIDs`);
 
-  await db
-    .ref(`/test/${currentTermId}/DocsIDs`)
-    .set(docIds) // Use currentTermId here
-    .then(() => {
-      alert("DocID added successfully.");
-      fetchTermDetails(); // Refresh to show the newly added DocID
-    })
-    .catch((error) => {
-      console.error("Error adding DocID: ", error);
-      alert("Failed to add DocID.");
-    });
-
-  // Clear input fields after successful addition
-  document.getElementById("newDocTitle").value = "";
-  document.getElementById("newDocUrl").value = "";
-  document.getElementById("newDocOccurrence").value = "";
+  try {
+    // Fetch current DocsIDs
+    const snapshot = await docsRef.once('value');
+    let currentDocs = snapshot.exists() ? snapshot.val() : [];
+    currentDocs.push(newDoc);
+    await  docsRef.set(currentDocs);
+    document.getElementById("test").innerHTML = "4";
+    alert("DocID added successfully.");
+    fetchTermDetails(); 
+    // Clear input fields
+    document.getElementById("newDocTitle").value = "";
+    document.getElementById("newDocUrl").value = "";
+    document.getElementById("newDocOccurrence").value = "";
+  } catch (error) {
+    console.error("Error adding DocID: ", error);
+    alert("Failed to add DocID.");
+  }
 }
-
 ////////////////////////////edit section/////////////////////////////////////////////

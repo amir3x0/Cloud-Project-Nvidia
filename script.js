@@ -482,17 +482,32 @@ async function fetchTermDetails() {
 
 function toggleEditSave(button, row, doc, index) {
   const isEditing = button.innerText === "Edit";
-  button.innerText = isEditing ? "Save" : "Edit";
-  toggleEditableCells(row, isEditing);
 
-  if (!isEditing) {
-    // Save changes logic
+  if (isEditing) {
+    // Entering edit mode, make cells editable
+    button.innerText = "Save";
+    toggleEditableCells(row, true);
+  } else {
+    // Attempting to save changes, validate first
     const updatedDoc = {
       title: row.cells[0].innerText,
       url: row.cells[1].innerText,
       occuranceNumber: parseInt(row.cells[2].innerText, 10)
     };
-    saveDocChanges(currentTermId, index, updatedDoc);
+
+    const validationError = validateDocInput(updatedDoc.occuranceNumber, updatedDoc.url);
+    if (validationError) {
+      alert(validationError);
+      return; 
+    }
+
+    saveDocChanges(currentTermId, index, updatedDoc).then(() => {
+      button.innerText = "Edit";
+      toggleEditableCells(row, false);
+    }).catch(error => {
+      console.error("Error saving DocID changes: ", error);
+      alert("Failed to save DocID changes.");
+    });
   }
 }
 
@@ -503,7 +518,17 @@ function toggleEditableCells(row, makeEditable) {
   });
 }
 
+function validateDocInput(occurrence, url) {
+  if (!Number.isInteger(occurrence) || occurrence < 1) {
+    return "Occurrences must be a positive integer.";
+  }
 
+  if (!url.startsWith("https://www.nvidia.com/")) {
+    return "URL must start with 'https://www.nvidia.com/'.";
+  }
+
+  return null; // No error, input is valid
+}
 
 async function saveDocChanges(termId, index, updatedDoc) {
   try {
@@ -526,7 +551,6 @@ async function saveDocChanges(termId, index, updatedDoc) {
 }
 
 async function removeDocId(termId, index) {
-
   try {
     // Fetch current DocsIDs directly within the remove function
     const docsRef = db.ref(`/test/${termId}/DocsIDs`);
@@ -570,6 +594,12 @@ async function addNewDocId() {
 
   if (!newDocURL || !newDocTitle || isNaN(newDocOccurrence)) {
     alert("Please enter valid DocID information.");
+    return;
+  }
+
+  const validationError = validateDocInput(newDocOccurrence, newDocURL);
+  if (validationError) {
+    alert(validationError);
     return;
   }
 

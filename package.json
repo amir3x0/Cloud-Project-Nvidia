@@ -2,5 +2,18 @@
   "dependencies": {
     "firebase": "^10.8.1",
     "firebase-admin": "^12.0.0"
-  }
+  },
+  "name": "cloud-project-nvidia",
+  "description": "\"# Cloud-Project-Nvidia\" \r \"# Cloud-Project-Nvidia\"",
+  "version": "1.0.0",
+  "main": "script.js",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
 }

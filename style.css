@@ -11,6 +11,7 @@
   --dropdown-background-color: #f9f9f9;
   --dropdown-text-color: #333;
   --error-color: #ff4d4d; /* Error messages in red */
+  --success-color: #4caf50; /* Green for success messages */
 }
 .dark-theme {
   --background-color: #121212;
@@ -285,51 +286,72 @@ body {
   color: var(--navbar-text-color); /* White text for contrast */
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
 .editIndexPage-container input[type="text"],
-.editIndexPage-container textarea,
 .editIndexPage-container input[type="number"] {
   width: 100%;
   padding: 12px;
-  margin: 10px 0;
-  border-radius: 5px;
+  margin-bottom: 15px;
   border: 1px solid var(--border-color);
+  border-radius: 5px;
   background-color: var(--container-background-color);
   color: var(--text-color);
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Inset shadow for depth */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inset shadow for depth */
+}
+
+.editIndexPage-container button,
+.docs-table .edit-btn,
+.docs-table .remove-btn {
+  padding: 6px 12px;
+  margin-right: 5px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s; /* Smooth transition for visual feedback */
+  display: inline-block;
 }
 
 .editIndexPage-container button {
-  background-color: var(--button-background-color); /* Dark buttons for contrast */
-  color: var(--button-text-color); /* White text on buttons */
-  border: none;
-  padding: 12px 20px;
-  margin-top: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+  background-color: var(--button-background-color); /* Primary button color */
+  color: var(--button-text-color); /* White text */
 }
-
 
 .editIndexPage-container button:hover {
-  background-color: darken(var(--button-background-color), 10%); /* Slightly darker on hover */
-  transform: scale(1.05); /* Slight grow effect for feedback */
+  background-color: darken(var(--button-background-color), 10%); /* Darker on hover */
+  transform: translateY(-2px); /* Lift effect */
 }
 
-.editIndexPage-container .feedback-message {
-  margin-top: 10px;
+h2 {
+  color: var(--button-background-color); /* Utilize the NVIDIA green for heading text */
+  text-align: center; /* Center-align the headings for a balanced look */
+  font-weight: bold; /* Ensure the headings are bold */
+  margin: 20px 0; /* Add some margin for spacing */
+  font-size: 1.5rem; /* Slightly larger font size for emphasis */
+  text-transform: uppercase; /* NVIDIA often uses uppercase text for titles to add a sense of importance and readability */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Add a subtle shadow for a 3D effect, enhancing the futuristic vibe */
 }
 
-.doc-ids-container {
-  overflow-x: auto;
+.docs-table .edit-btn {
+  background-color: #4CAF50; /* Edit button green */
+  color: white;
+}
+
+.docs-table .remove-btn {
+  background-color: #F44336; /* Remove button red */
+  color: white;
+}
+
+.docs-table .edit-btn:hover,
+.docs-table .remove-btn:hover {
+  opacity: 0.8;
 }
 
 .docs-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 20px; /* Space above table */
 }
 
 .docs-table th,
@@ -351,95 +373,44 @@ body {
 .docs-table td {
   background-color: var(--container-background-color);
   color: var(--text-color);
+  
 }
 
-.docs-table td[contentEditable="true"]:focus {
-  background-color: #e8f0fe;
-  outline: none;
-}
-
-.docs-table button {
-  background-color: var(--button-background-color);
-  color: var(--button-text-color);
-  padding: 6px 12px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-}
-
-.docs-table button:hover {
-  background-color: #5a8e00;
-}
-
-/* Feedback messages for success/error */
+/* Feedback messages */
 .success, .error {
   font-weight: bold;
   padding: 10px;
   border-radius: 4px;
   margin-top: 20px;
-  display: inline-block;
 }
 
 .success {
-  background-color: #4caf50; /* Success green */
-  color: #fff; /* White text for readability */
+  background-color: var(--success-color); /* Success green */
+  color: white;
 }
 
 .error {
-  background-color: var(--error-color); /* Bright red for errors */
-  color: #fff; /* White text for readability */
+  background-color: var(--error-color); /* Error red */
+  color: white;
 }
 
-/* Styles for additional control buttons */
+/* Editable cell styles */
+.editable[contenteditable="true"] {
+  background-color: #fafafa;
+  border: 1px dashed #ccc;
+  padding: 5px;
+}
+
+/* Enhancing the edit controls */
 .edit-controls {
   display: flex;
-  justify-content: flex-start; /* Align buttons to the start */
-  gap: 10px; /* Space between buttons */
+  justify-content: space-between; /* Space between control buttons */
+  margin-top: 20px;
 }
 
-#addDocIdButton {
-  margin-left: auto; /* Push add button to the right */
-}
-
-/* Style adjustments for input fields to match NVIDIA theme */
-.input-field {
-  border: 1px solid #ccc; /* Lighter border for inputs */
-}
-
-.btn {
-  background-color: var(--button-background-color);
-  color: var(--button-text-color);
-  transition: background-color 0.2s, transform 0.1s; /* Smoother transitions */
-  /* Other button styles remain unchanged */
-}
-
-.btn:hover {
-  opacity: 0.9; /* Slightly lower opacity for hover effect */
-  background-color: #5a8e00; /* Slightly darker green on hover */
-  transform: scale(1.05); /* Subtle grow effect */
-}
-
-.input-field, .btn {
-  margin-bottom: 15px; /* Consistent spacing */
-}
-
-/* Ensuring text and button colors align with the theme */
-.input-label, #editMessage {
-  color: var(--text-color);
-}
-
-.editIndexPage-container .editable-docid, .doc-ids-container {
-  background-color: var(--background-color); /* Slightly darker for focus */
-  border: 1px solid var(--border-color); /* Defined borders for separation */
-}
-
-.editable-docid:focus, .editable-content:focus, .editable-url:focus {
-  background-color: #333; /* Darker focus state for contrast */
-  color: var(--button-text-color);
-  border-color: var(--link-color); /* Nvidia green border on focus */
-}
 
 /* End admin page styles */
+
 
 
 

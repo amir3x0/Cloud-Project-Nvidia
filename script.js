@@ -390,7 +390,6 @@ async function searchTerms(searchQueryString) {
 
 //////////////////////////////////edit section///////////////////////////////////////////////////////
 
-
 async function searchTermsforEdit(searchQueryString) {
   const results = [];
   const words = searchQueryString.toLowerCase().match(/\w+/g);
@@ -418,7 +417,8 @@ async function fetchTermDetails() {
   const term = termInput.value.trim().toLowerCase();
   const results = await searchTermsforEdit(term);
   const docIdsContainer = document.getElementById("docIdsContainer");
-  // Reset the container and setup the table if not already present
+
+  // Reset the container and setup the table
   docIdsContainer.innerHTML = `<table class="docs-table">
                                   <thead>
                                     <tr>
@@ -440,34 +440,39 @@ async function fetchTermDetails() {
   }
 
   currentTermId = results[0].id;
-  document.getElementById("test").innerHTML = currentTermId;
 
   results[0].DocsIDs.forEach((doc, index) => {
     const row = document.createElement("tr");
     row.setAttribute("data-index", index);
 
     const titleCell = document.createElement("td");
-    titleCell.contentEditable = true;
     titleCell.innerText = doc.title;
 
     const urlCell = document.createElement("td");
-    urlCell.contentEditable = true;
     urlCell.innerText = doc.url;
 
     const occurrencesCell = document.createElement("td");
-    occurrencesCell.contentEditable = true;
     occurrencesCell.innerText = doc.occuranceNumber;
 
-    const actionsCell = document.createElement("td");
+    const actionCell = document.createElement("td");
+
+    const editBtn = document.createElement("button");
+    editBtn.innerText = "Edit";
+    editBtn.className = "edit-btn";
+    editBtn.onclick = function() { toggleEditSave(this, row, doc, index); };
+
     const removeBtn = document.createElement("button");
     removeBtn.innerText = "Remove";
+    removeBtn.className = "remove-btn";
     removeBtn.onclick = () => removeDocId(currentTermId, index);
-    actionsCell.appendChild(removeBtn);
+
+    actionCell.appendChild(editBtn);
+    actionCell.appendChild(removeBtn);
 
     row.appendChild(titleCell);
     row.appendChild(urlCell);
     row.appendChild(occurrencesCell);
-    row.appendChild(actionsCell);
+    row.appendChild(actionCell);
 
     docsTableBody.appendChild(row);
   });
@@ -475,8 +480,53 @@ async function fetchTermDetails() {
   document.getElementById("editDetails").style.display = "block";
 }
 
+function toggleEditSave(button, row, doc, index) {
+  const isEditing = button.innerText === "Edit";
+  button.innerText = isEditing ? "Save" : "Edit";
+  toggleEditableCells(row, isEditing);
+
+  if (!isEditing) {
+    // Save changes logic
+    const updatedDoc = {
+      title: row.cells[0].innerText,
+      url: row.cells[1].innerText,
+      occuranceNumber: parseInt(row.cells[2].innerText, 10)
+    };
+    saveDocChanges(currentTermId, index, updatedDoc);
+  }
+}
+
+function toggleEditableCells(row, makeEditable) {
+  const cells = row.querySelectorAll("td:not(:last-child)"); // Exclude action cell
+  cells.forEach(cell => {
+    cell.contentEditable = makeEditable;
+  });
+}
+
+
+
+async function saveDocChanges(termId, index, updatedDoc) {
+  try {
+    const docsRef = db.ref(`test/${termId}/DocsIDs`);
+    const snapshot = await docsRef.once("value");
+    let currentDocs = snapshot.exists() ? snapshot.val() : [];
+
+    if (currentDocs.length > index) {
+      currentDocs[index] = updatedDoc;
+      await docsRef.set(currentDocs);
+      alert("Changes saved successfully.");   
+      fetchTermDetails();
+    } else {
+      alert("Error: Document to update does not exist.");
+    }
+  } catch (error) {
+    console.error("Error saving DocID changes: ", error);
+    alert("Failed to save DocID changes.");
+  }
+}
 
 async function removeDocId(termId, index) {
+
   try {
     // Fetch current DocsIDs directly within the remove function
     const docsRef = db.ref(`/test/${termId}/DocsIDs`);
@@ -511,10 +561,12 @@ async function addNewDocId() {
     alert("No term selected for adding a new DocID.");
     return;
   }
-  document.getElementById("test").innerHTML = '';
   const newDocTitle = document.getElementById("newDocTitle").value.trim();
   const newDocURL = document.getElementById("newDocUrl").value.trim();
-  const newDocOccurrence = parseInt(document.getElementById("newDocOccurrence").value.trim(), 10);
+  const newDocOccurrence = parseInt(
+    document.getElementById("newDocOccurrence").value.trim(),
+    10
+  );
 
   if (!newDocURL || !newDocTitle || isNaN(newDocOccurrence)) {
     alert("Please enter valid DocID information.");
@@ -528,17 +580,16 @@ async function addNewDocId() {
   };
 
   // Correct reference to fetch current DocsIDs
-  const docsRef  = db.ref(`test/${currentTermId}/DocsIDs`);
+  const docsRef = db.ref(`test/${currentTermId}/DocsIDs`);
 
   try {
     // Fetch current DocsIDs
-    const snapshot = await docsRef.once('value');
+    const snapshot = await docsRef.once("value");
     let currentDocs = snapshot.exists() ? snapshot.val() : [];
     currentDocs.push(newDoc);
-    await  docsRef.set(currentDocs);
-    document.getElementById("test").innerHTML = "4";
+    await docsRef.set(currentDocs);
     alert("DocID added successfully.");
-    fetchTermDetails(); 
+    fetchTermDetails();
     // Clear input fields
     document.getElementById("newDocTitle").value = "";
     document.getElementById("newDocUrl").value = "";

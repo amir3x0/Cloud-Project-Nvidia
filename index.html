@@ -45,13 +45,7 @@
       </div>
       <div class="nav-links">
         <a onclick="switchPage('searchPage')">Search</a>
-        <div class="dropdown">
-          <span class="dropbtn">Index</span>
-          <div class="dropdown-content">
-            <a onclick="switchPage('addIndexPage')">Add New Index</a>
-            <a onclick="switchPage('editIndexPage')">Edit Index</a>
-          </div>
-        </div>
+        <a onclick="switchPage('editIndexPage')">Edit Index</a>
         <a onclick="switchPage('statisticsPage')">Statistics</a>
         <span class="theme-toggle" onclick="toggleTheme()">Toggle Theme</span>
       </div>
@@ -96,28 +90,18 @@
             <input type="text" id="editTerm" class="input-field" placeholder="Existing term" />
             <button class="btn" onclick="fetchTermDetails()">Fetch Term Details</button>
             <div id="editDetails" style="display:none;">
-                <label for="docIdsContainer" class="input-label">DocIDs:</label>
                 <div id="docIdsContainer" class="doc-ids-container"></div>
                 <!-- Updated section for adding a new DocID -->
+                <h2>Add New DocID</h2>
                 <input type="text" id="newDocTitle" class="input-field" placeholder="Enter new DocID title" />
                 <input type="text" id="newDocUrl" class="input-field" placeholder="Enter new DocID URL" />
                 <input type="number" id="newDocOccurrence" class="input-field" placeholder="Enter new DocID occurrence number" />
-                <button id="addDocIdButton" class="btn">+ Add DocID</button>
+                <button id="addDocIdButton" class="btn" onclick="addNewDocId()">+ Add DocID</button>
             </div>
         </div>
         <h2 id="editMessage"></h2>
     </div>
 
-
-    <div id="addIndexPage" class="container">
-      <h2>Add term</h2>
-      <div class="form-container">
-        <input type="text" id="newTerm" class="input-field" placeholder="New term" />
-        <input type="text" id="docIds" class="input-field" placeholder="DocIDs (comma-separated)" />
-        <button class="btn" onclick="addTerm()">Add Term</button>
-      </div>
-      <h2 id="addMessage"></h2>
-    </div>
 
     <div id="statisticsPage" class="container">
       <div id="statsContainer" >

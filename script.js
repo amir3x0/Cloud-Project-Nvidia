@@ -460,32 +460,32 @@ async function fetchTermDetails() {
 }
 
 async function removeDocId(termId, index) {
-  const currentDocIds = await fetchCurrentDocIds(termId);
-  if (currentDocIds && currentDocIds.length > index) {
-    currentDocIds.splice(index, 1);
+  try {
+    // Fetch current DocsIDs directly within the remove function
+    const docsRef = db.ref(`/test/${termId}/DocsIDs`);
+    const snapshot = await docsRef.once("value");
 
-    await db
-      .ref(`/test/${termId}/DocsIDs`)
-      .set(currentDocIds)
-      .then(() => {
+    if (snapshot.exists()) {
+      let currentDocIds = snapshot.val();
+
+      // Check if the index is valid for the current list of DocIDs
+      if (currentDocIds.length > index) {
+        // Remove the DocID at the specified index
+        currentDocIds.splice(index, 1);
+
+        // Update the database with the new list of DocIDs
+        await docsRef.set(currentDocIds);
         alert("DocID removed successfully.");
-        fetchTermDetails();
-      })
-      .catch((error) => {
-        console.error("Error removing DocID: ", error);
-        alert("Failed to remove DocID.");
-      });
-  } else {
-    alert("No DocID found to remove.");
-  }
-}
-
-async function fetchCurrentDocIds(termId) {
-  const snapshot = await db.ref(`/test/${termId}/DocsIDs`).once("value");
-  if (snapshot.exists()) {
-    return snapshot.val();
-  } else {
-    return [];
+        fetchTermDetails(); // Refresh the displayed list of DocIDs
+      } else {
+        alert("Invalid DocID index. Unable to remove.");
+      }
+    } else {
+      alert("No DocIDs found for the specified term.");
+    }
+  } catch (error) {
+    console.error("Error removing DocID: ", error);
+    alert("Failed to remove DocID.");
   }
 }
 

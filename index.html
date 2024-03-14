@@ -38,17 +38,23 @@
   <div class="wrapper">
     
     <div class="navbar">
-      
       <div class="logo">
         <i class="fas fa-microchip"></i>
         <span>Nvidia Search Engine</span>
+        <span id="welcomeMsg" style="color: #00ff00; margin-left: 20px;"></span>
+
       </div>
       <div class="nav-links">
-        <a onclick="switchPage('searchPage')">Search</a>
-        <a onclick="switchPage('editIndexPage')">Edit Index</a>
-        <a onclick="switchPage('statisticsPage')">Statistics</a>
+        <a id="loginLink" onclick="switchPage('login')">Login</a>
+        <a id="registerLink" onclick="switchPage('register')" class="left-link">Register</a>
+        <a id="logoutLink" onclick="logout()" style="display: none;" class="left-link">Logout</a>
+        <a id="searchLink" onclick="switchPage('searchPage')">Search</a>
+        <a id="editIndexLink" onclick="switchPage('editIndexPage')">Edit Index</a>
+        <a id="statisticsLink" onclick="switchPage('statisticsPage')">Statistics</a>
         <span class="theme-toggle" onclick="toggleTheme()">Toggle Theme</span>
       </div>
+      
+      
     </div>
     <!-- top image (salamandra) -->
     <div class="container">
@@ -82,6 +88,33 @@
         <option value="50">50</option>
       </select>
     </div>
+
+    
+    <div id="login" class="container">
+      <form id="loginForm" class="form">
+        <input type="text" id="username1" name="username" placeholder="User Name" required><br>
+        <input type="password" id="password" name="password" placeholder="Password" required><br>
+        <button type="button" onclick="login()">Login</button>
+        <div id="loginMessage"></div> <!-- Message container -->
+      </form>
+    </div>
+    
+    
+    <div id="register" class="container">
+      <form id="registerForm" class="form">
+        <input type="text" id="username2" name="username" placeholder="User Name" required><br>
+        <input type="password" id="password1" name="password" placeholder="Password" required><br>
+        <input type="password" id="password2" name="password" placeholder="Confirm Password" required><br>
+        <button type="button" onclick="register()">Register</button>
+        <div id="registerMessage"></div> <!-- Message container -->
+      </form>
+    </div>
+    
+    
+    
+    
+    
+    
 
 
       <div id="editIndexPage" class="container">
@@ -133,6 +166,16 @@
       </div>
     </div>
   </div>
+
+  <script>
+    window.addEventListener("beforeunload", (event) => {
+
+
+    // The tab is not hidden, proceed with your code to remove items from local storage
+    localStorage.removeItem("username");
+    localStorage.removeItem("admin");
+    });
+  </script>
 
   <script src="script.js"></script>
   <!-- <script src="./frontend/api.js"></script> -->

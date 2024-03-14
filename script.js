@@ -5,6 +5,7 @@ let linksPerPage = 5; // Default links per page
 let allMatchingLinks = []; // Moved to a global scope
 let currentTermId = null; // This will hold the ID of the currently edited term
 
+toggleLinks(); // need to toggle the links base on if user uis logged in or not
 // Function to get the query and call search in db.
 async function search() {
   currentPage = 1; // Reset to first page for every new search
@@ -16,6 +17,31 @@ async function search() {
   allMatchingLinks = []; // Reset for new search
 
   const results = await searchTerms(query);
+  console.log(results);
+  // start save the history search
+  const username = localStorage.getItem("username");
+
+  if (username !== null) 
+  {
+    const usersRef = db.ref("users");
+    const snapshot = await usersRef.orderByChild("userName").equalTo(username).once("value");
+    const search = {
+      querySearched: query,
+      result: results
+    };
+  
+    if (snapshot.exists()) {
+      const userData = snapshot.val();
+      const userId = Object.keys(userData)[0]; // Assuming there's only one user
+  
+      // Push the search data to the user's history
+      const newSearchRef = usersRef.child(`${userId}/history`).push();
+      await newSearchRef.set(search);
+  
+      console.log("Search added to user history.");
+    }
+  }
+  // end of save history sea  rch
 
   if (results.length > 0) {
     results.forEach((result) => {
@@ -105,7 +131,7 @@ function switchPage(pageId) {
   }, 10);
 }
 
-switchPage("searchPage");
+switchPage("login");  
 
 function clearSearch() {
   document.getElementById("searchQuery").value = "";
@@ -646,3 +672,155 @@ async function addNewDocId() {
   }
 }
 ////////////////////////////edit section/////////////////////////////////////////////
+
+////////////////////////////history login register section/////////////////////////////////////////////
+async function login() {
+  var username = document.getElementById("username1").value;
+  var password = document.getElementById("password").value;
+
+  try {
+    // Reference to the user document in the database based on username
+    const userRef = db.ref("users").orderByChild("userName").equalTo(username);
+    
+    // Fetch the user data
+    userRef.once("value", function(snapshot) {
+      // Check if any user documents exist with the given username
+      if (snapshot.exists()) {
+        // Get the first user document (assuming usernames are unique)
+        const userId = Object.keys(snapshot.val())[0]; // Get the userId of the first matching user
+        const userData = snapshot.child(userId).val();
+        const storedPassword = userData.password;
+        const storedPasswordString = String(storedPassword);
+        const enteredPasswordString = String(password);
+        toggleLinks();
+
+        // Check if the provided password matches the stored password
+        if (enteredPasswordString === storedPasswordString) {
+          // Passwords match, user authentication successful
+          console.log("Login successful. User:", username);
+          document.getElementById("loginForm").reset();
+          localStorage.setItem("username", username);
+          localStorage.setItem("admin", userData.admin);
+          toggleLinks();
+          switchPage("searchPage");
+          // Do something to indicate successful login, such as redirecting the user to another page
+        } else {
+          // Passwords do not match, display an error message
+          console.log("Incorrect password.");
+          document.getElementById("loginMessage").textContent = "Incorrect password.";
+        }
+      } else {
+        // No user found with the given username, display an error message
+        console.log("User not found.");
+        document.getElementById("loginMessage").textContent = "User not found.";
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    // Handle error, such as displaying an error message to the user
+    document.getElementById("loginMessage").textContent = "Error logging in. Please try again later.";
+  }
+}
+
+function toggleLinks() {
+  const username = localStorage.getItem("username");
+
+  var loginLink = document.getElementById("loginLink");
+  var registerLink = document.getElementById("registerLink");
+  var searchLink = document.getElementById("searchLink");
+  var editIndexLink = document.getElementById("editIndexLink");
+  var statisticsLink = document.getElementById("statisticsLink");
+  var logoutLink = document.getElementById("logoutLink");
+
+  if (username !== null) {
+    document.getElementById("welcomeMsg").textContent = "hi "+username;
+    const admin = localStorage.getItem("admin");
+    console.log(admin);
+    // User is logged in
+    console.log("user is logged in as : ",username);
+    loginLink.style.display = "none";
+    registerLink.style.display = "none";
+    searchLink.style.display = "inline";
+    if (admin === "true") {
+      // If admin is true, display editIndexLink
+      editIndexLink.style.display = "inline";
+    } else {
+      // If admin is not true, hide editIndexLink
+      editIndexLink.style.display = "none";
+    }
+    statisticsLink.style.display = "inline";
+    logoutLink.style.display = "inline"; // Show logout link
+  } else {
+    console.log("user is not logged in")
+    // User is logged out
+    loginLink.style.display = "inline";
+    registerLink.style.display = "inline";
+    searchLink.style.display = "none";
+    editIndexLink.style.display = "none";
+    statisticsLink.style.display = "none";
+    logoutLink.style.display = "none"; // Hide logout link
+  }
+}
+
+
+async function register() {
+  var username = document.getElementById("username2").value;
+  var password1 = document.getElementById("password1").value;
+  var password2 = document.getElementById("password2").value;
+
+  try {
+    // Reference to the users collection in the database
+    const usersRef = db.ref("users");
+
+    // Check if the username already exists
+    const snapshot = await usersRef.orderByChild("userName").equalTo(username).once("value");
+    if (snapshot.exists()) {
+      // Handle the case where the username already exists
+      document.getElementById("registerMessage").textContent = "Username already exists.";
+    } 
+    else 
+    {
+      if (password1 !== password2) {
+        document.getElementById("registerMessage").textContent = "Passwords do not match.";
+      } else {
+        // Create the user object with the provided data
+        const newUser = {
+          userName: username,
+          password: password1,
+          admin: false, // Assuming new users are not admins by default
+          history: {search0:""},
+        };
+
+        // Set the user data in the database under the username
+        await usersRef.child(username).set(newUser);
+        window.alert("you are seccessfuly registred");
+        switchPage("login");
+        
+      }
+    }
+  } catch (error) {
+    console.error("Error registering user:", error);
+    // Handle error, such as displaying an error message to the user
+    document.getElementById("registerMessage").textContent = "Error registering user. Please try again later.";
+  }
+}
+
+
+
+function logout()
+{
+  localStorage.removeItem("username");
+  localStorage.removeItem("admin");
+  document.getElementById("welcomeMsg").textContent = "";
+  location.reload();
+}
+
+
+
+window.addEventListener("beforeunload", function(event) {
+  // Perform your action here
+  localStorage.removeItem("username");
+  localStorage.removeItem("admin");
+  // The browser will handle showing a confirmation dialog to the user
+  // with a default message, such as "Changes you made may not be saved."
+});

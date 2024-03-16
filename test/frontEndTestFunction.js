@@ -10,40 +10,64 @@ admin.initializeApp({
 const db = admin.database();
 
 async function searchTerms(searchQueryString) {
-  const results = [];
+  const results = {};
 
-  // Convert the search query string to lowercase and match words, ignoring non-word characters
   const words = searchQueryString.toLowerCase().match(/\w+/g);
-  //print the words in the words array
   console.log(words);
 
-  if (!words) {
-    return results; // Return an empty array if no words are found
+  if (!words || words.length === 0) {
+    return []; // Return an empty array if no words are found
   }
 
-  // get all index from DB
   const snapshot = await db.ref("/test").once("value");
 
   if (snapshot.exists()) {
     snapshot.forEach((childSnapshot) => {
       const data = childSnapshot.val();
 
-      // Check if any word in the search query matches the Term, ignoring case
-      // Convert both to lowercase for case-insensitive comparison
-      if (data && data.Term && words.includes(data.Term.toLowerCase())) {
-        if (data.DocsIDs && data.DocsIDs.length > 0) {
-          // Push the whole data object if a match is found
-          results.push(data);
-        }
+      // Check and accumulate occurrences for each document based on the search terms
+      if (data && data.DocsIDs && data.DocsIDs.length > 0) {
+        data.DocsIDs.forEach((doc) => {
+          words.forEach((word) => {
+            if (data.Term.toLowerCase() === word) {
+              // Initialize or update the document entry
+              if (!results[doc.url]) {
+                results[doc.url] = {
+                  url: doc.url,
+                  title: doc.title,
+                  totalOccurrences: 0,
+                  terms: new Set(), // Use a Set to store unique terms
+                };
+              }
+              // Update total occurrences and add the term to the Set
+              results[doc.url].totalOccurrences += doc.occuranceNumber;
+              results[doc.url].terms.add(data.Term); // Add the matching term
+            }
+          });
+        });
       }
     });
   }
 
-  return results;
+  const sortedResults = Object.values(results)
+    .map((doc) => ({
+      ...doc,
+      terms: Array.from(doc.terms), // Convert Set to Array
+    }))
+    .sort((a, b) => {
+      // Compare the lengths of the terms array first
+      if (a.terms.length !== b.terms.length) {
+        return b.terms.length - a.terms.length; // Descending order by length of terms
+      }
+      // If the lengths are equal, then sort by totalOccurrences (descending order)
+      return b.totalOccurrences - a.totalOccurrences;
+    });
+
+  return sortedResults;
 }
 
 //test
-const searchQueryString = "world";
+const searchQueryString = "ai detect";
 searchTerms(searchQueryString).then((results) => {
   for (const result of results) {
     console.log(result);

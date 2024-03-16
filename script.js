@@ -5,13 +5,11 @@ let linksPerPage = 5; // Default links per page
 let allMatchingLinks = []; // Moved to a global scope
 let currentTermId = null; // This will hold the ID of the currently edited term
 
-
+toggleLinks(); // need to toggle the links base on if user uis logged in or not
+// Function to get the query and call search in db.
 async function search() {
   currentPage = 1; // Reset to first page for every new search
-  const query = document
-    .getElementById("searchQuery")
-    .value.trim()
-    .toLowerCase();
+  const query = document.getElementById("searchQuery").value.trim().toLowerCase();
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = "";
 
@@ -19,16 +17,35 @@ async function search() {
   allMatchingLinks = []; // Reset for new search
 
   const results = await searchTerms(query);
+  console.log(results);
+  // start save the history search
+  const username = localStorage.getItem("username");
+
+  if (username !== null) 
+  {
+    const usersRef = db.ref("users");
+    const snapshot = await usersRef.orderByChild("userName").equalTo(username).once("value");
+    const search = {
+      querySearched: query,
+      result: results
+    };
+  
+    if (snapshot.exists()) {
+      const userData = snapshot.val();
+      const userId = Object.keys(userData)[0]; // Assuming there's only one user
+  
+      // Push the search data to the user's history
+      const newSearchRef = usersRef.child(`${userId}/history`).push();
+      await newSearchRef.set(search);
+  
+      console.log("Search added to user history.");
+    }
+  }
+  // end of save history sea  rch
 
   if (results.length > 0) {
     results.forEach((result) => {
-      let docs = result.DocsIDs.map((doc) => ({
-        term: result.Term,
-        title: doc.title,
-        url: doc.url,
-        occuranceNumber: doc.occuranceNumber,
-      }));
-      allMatchingLinks = allMatchingLinks.concat(docs);
+      allMatchingLinks = allMatchingLinks.concat(result);
     });
 
     // Sort allMatchingLinks by occuranceNumber, highest first
@@ -43,6 +60,7 @@ async function search() {
   }
 }
 
+// Function to display a page given index.
 function displayPage(page) {
   const start = (page - 1) * linksPerPage;
   const end = start + linksPerPage;
@@ -51,10 +69,10 @@ function displayPage(page) {
   const resultsContainer = document.getElementById("searchResults");
   resultsContainer.innerHTML = ""; // Clear previous results
 
-  pageLinks.forEach(({ term, title, url, occuranceNumber }) => {
+  pageLinks.forEach(({ terms, title, url, totalOccurrences }) => {
     const docHtml = `<div class="doc">
                        <a href="${url}" target="_blank" class="doc-url">
-                        <div class="doc-info"><span class="doc-title">${title}</span> <span class="doc-term">[${term}]</span> <span class="doc-occurrences">(${occuranceNumber} occurrences)</span></div>
+                        <div class="doc-info"><span class="doc-title">${title}</span> <span class="doc-term">[${terms}]</span> <span class="doc-occurrences">(${totalOccurrences} occurrences)</span></div>
                         <div>${url}</div>
                        </a>
                      </div>`;
@@ -62,6 +80,7 @@ function displayPage(page) {
   });
 }
 
+// Function to set up the search results pages.
 function setupPagination(totalPages) {
   const paginationContainer = document.getElementById("pagination");
   paginationContainer.innerHTML = ""; // Clear previous pagination
@@ -79,6 +98,7 @@ function setupPagination(totalPages) {
   }
 }
 
+// Function to update the active button of the pagination.
 function updateActiveButton(activePageNumber) {
   const buttons = paginationContainer.querySelectorAll("pagination-btn");
   buttons.forEach((button) => {
@@ -90,7 +110,29 @@ function updateActiveButton(activePageNumber) {
   });
 }
 
-// Clear Search function
+function switchPage(pageId) {
+  document
+    .querySelectorAll(".container, .search-container")
+    .forEach(function (page) {
+      page.classList.remove("active");
+    });
+  document.getElementById(pageId).classList.add("active");
+  if (pageId === "statisticsPage") {
+    calcStats();
+  }
+  page.classList.remove("active", "fade-in"); // Remove both active and fade-in classes
+
+  const activePage = document.getElementById(pageId);
+  activePage.classList.add("active");
+
+  // Delay the fade-in animation slightly to ensure it triggers upon visibility
+  setTimeout(() => {
+    activePage.classList.add("fade-in");
+  }, 10);
+}
+
+switchPage("login");  
+
 function clearSearch() {
   document.getElementById("searchQuery").value = "";
   document.getElementById("searchResults").innerHTML = "";
@@ -104,14 +146,13 @@ function toggleTheme() {
 }
 
 async function calcStats() {
-  const allData = await searchTerms("__all");
+  const allData = await searchAll();
   let totalTerms = allData.length;
   let totalLinks = 0;
   let termWithMostLinks = "";
   let maxLinksCount = 0;
   let termFrequencies = {};
   let linkOccurrences = {};
-
   // Runs on all of the index
   allData.forEach((entry) => {
     const linksCount = entry.DocsIDs.length; // Assuming the property is DocsIDs
@@ -160,6 +201,24 @@ async function calcStats() {
   renderCommonLinksChart(sortedLinkOccurrences);
 }
 
+// Returns all the db in array.
+async function searchAll() {
+  const results = [];
+
+  // get all index from DB
+  const snapshot = await db.ref("/test").once("value");
+
+  if (snapshot.exists()) {
+    snapshot.forEach((childSnapshot) => {
+      const data = childSnapshot.val();
+      results.push(data);
+    });
+  }
+
+  return results;
+}
+
+// Displays the Common terms chart.
 function renderCommonTermsChart(commonTermsData) {
   const ctx = document.getElementById("commonTermsChart").getContext("2d");
   const chart = new Chart(ctx, {
@@ -192,6 +251,7 @@ function renderCommonTermsChart(commonTermsData) {
   });
 }
 
+// Displays the Common links chart.
 function renderCommonLinksChart(commonLinksData) {
   const ctx = document.getElementById("commonLinksChart").getContext("2d");
   const chart = new Chart(ctx, {
@@ -231,6 +291,7 @@ function renderCommonLinksChart(commonLinksData) {
   });
 }
 
+// Displays the Statistics table.
 function renderStatsTable({
   totalTerms,
   totalLinks,
@@ -243,9 +304,7 @@ function renderStatsTable({
       <tr><th>Total Terms</th><td>${totalTerms}</td></tr>
       <tr><th>Total Links</th><td>${totalLinks}</td></tr>
       <tr><th>Term with Most Links</th><td>${termWithMostLinks} (${maxLinksCount} links)</td></tr>
-      <tr><th>Average Links per Term</th><td>${avgLinksPerTerm.toFixed(
-        2
-      )}</td></tr>
+      <tr><th>Average Links per Term</th><td>${avgLinksPerTerm.toFixed(2)}</td></tr>
     </table>
   `;
   document.getElementById("statsTable").innerHTML = tableHtml;
@@ -328,18 +387,14 @@ function changeFontSize(action) {
 
 // Function to search a query in database. Returns a dict of matches.
 async function searchTerms(searchQueryString) {
-  const results = [];
+  const results = {};
 
-  // Convert the search query string to lowercase and match words, ignoring non-word characters
   const words = searchQueryString.toLowerCase().match(/\w+/g);
-  //print the words in the words array
-  console.log(words);
 
-  if (!words) {
-    return results; // Return an empty array if no words are found
+  if (!words || words.length === 0) {
+    return []; // Return an empty array if no words are found
   }
 
-  // get all index from DB
   const snapshot = await db.ref("/test").once("value");
 
   if (snapshot.exists()) {
@@ -354,23 +409,48 @@ async function searchTerms(searchQueryString) {
       snapshot.forEach((childSnapshot) => {
         const data = childSnapshot.val();
 
-        // Check if any word in the search query matches the Term, ignoring case
-        // Convert both to lowercase for case-insensitive comparison
-        if (data && data.Term && words.includes(data.Term.toLowerCase())) {
-          if (data.DocsIDs && data.DocsIDs.length > 0) {
-            // Push the whole data object if a match is found
-            results.push(data);
-          }
+        // Check and accumulate occurrences for each document based on the search terms
+        if (data && data.DocsIDs && data.DocsIDs.length > 0) {
+          data.DocsIDs.forEach((doc) => {
+            words.forEach((word) => {
+              if (data.Term.toLowerCase() === word) {
+                // Initialize or update the document entry
+                if (!results[doc.url]) {
+                  results[doc.url] = {
+                    url: doc.url,
+                    title: doc.title,
+                    totalOccurrences: 0,
+                    terms: new Set(), // Use a Set to store unique terms
+                  };
+                }
+                // Update total occurrences and add the term to the Set
+                results[doc.url].totalOccurrences += doc.occuranceNumber;
+                results[doc.url].terms.add(data.Term); // Add the matching term
+              }
+            });
+          });
         }
       });
     }
   }
-  return results;
+  const sortedResults = Object.values(results)
+    .map((doc) => ({
+      ...doc,
+      terms: Array.from(doc.terms), // Convert Set to Array
+    }))
+    .sort((a, b) => {
+      // Compare the lengths of the terms array first
+      if (a.terms.length !== b.terms.length) {
+        return b.terms.length - a.terms.length; // Descending order by length of terms
+      }
+      // If the lengths are equal, then sort by totalOccurrences (descending order)
+      return b.totalOccurrences - a.totalOccurrences;
+    });
+
+  return sortedResults;
 }
 
-
 //////////////////////////////////edit section///////////////////////////////////////////////////////
-
 
 async function searchTermsforEdit(searchQueryString) {
   const results = [];
@@ -399,99 +479,174 @@ async function fetchTermDetails() {
   const term = termInput.value.trim().toLowerCase();
   const results = await searchTermsforEdit(term);
   const docIdsContainer = document.getElementById("docIdsContainer");
-  docIdsContainer.innerHTML = "";
+
+  // Reset the container and setup the table
+  docIdsContainer.innerHTML = `<table class="docs-table">
+                                  <thead>
+                                    <tr>
+                                      <th>Title</th>
+                                      <th>URL</th>
+                                      <th>Occurrences</th>
+                                      <th>Actions</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody id="docsTableBody">
+                                  </tbody>
+                                </table>`;
+  const docsTableBody = document.getElementById("docsTableBody");
 
   if (results.length === 0) {
     alert("No details found for term: " + term);
-    currentTermId = null; // Reset currentTermId as no term is found
+    currentTermId = null;
     return;
   }
 
-  // Assuming only one result will match, or taking the first match
-  currentTermId = results[0].id; // Save the termId of the fetched term
+  currentTermId = results[0].id;
 
-  results.forEach((result) => {
-    result.DocsIDs.forEach((doc, index) => {
-      const docDiv = document.createElement("div");
-      docDiv.className = "doc-container";
-      docDiv.setAttribute("data-index", index);
+  results[0].DocsIDs.forEach((doc, index) => {
+    const row = document.createElement("tr");
+    row.setAttribute("data-index", index);
 
-      const docContent = `
-        <div contentEditable="true" class="editable-content" data-index="${index}">
-          ${doc.title} (${doc.occuranceNumber} occurrences)
-        </div>
-        <div contentEditable="true" class="editable-url" data-index="${index}">
-          ${doc.url}
-        </div>
-      `;
-      docDiv.innerHTML = docContent;
+    const titleCell = document.createElement("td");
+    titleCell.innerText = doc.title;
 
-      const removeBtn = document.createElement("button");
-      removeBtn.innerText = "Remove";
-      removeBtn.setAttribute("data-index", index);
-      removeBtn.onclick = () => removeDocId(result.id, index);
+    const urlCell = document.createElement("td");
+    urlCell.innerText = doc.url;
 
-      docDiv.appendChild(removeBtn);
-      docIdsContainer.appendChild(docDiv);
-    });
+    const occurrencesCell = document.createElement("td");
+    occurrencesCell.innerText = doc.occuranceNumber;
+
+    const actionCell = document.createElement("td");
+
+    const editBtn = document.createElement("button");
+    editBtn.innerText = "Edit";
+    editBtn.className = "edit-btn";
+    editBtn.onclick = function() { toggleEditSave(this, row, doc, index); };
+
+    const removeBtn = document.createElement("button");
+    removeBtn.innerText = "Remove";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => removeDocId(currentTermId, index);
+
+    actionCell.appendChild(editBtn);
+    actionCell.appendChild(removeBtn);
+
+    row.appendChild(titleCell);
+    row.appendChild(urlCell);
+    row.appendChild(occurrencesCell);
+    row.appendChild(actionCell);
+
+    docsTableBody.appendChild(row);
   });
 
   document.getElementById("editDetails").style.display = "block";
 }
 
-async function removeDocId(termId, index) {
-  const currentDocIds = await fetchCurrentDocIds(termId);
-  if (currentDocIds && currentDocIds.length > index) {
-    currentDocIds.splice(index, 1);
+function toggleEditSave(button, row, doc, index) {
+  const isEditing = button.innerText === "Edit";
 
-    await db
-      .ref(`/test/${termId}/DocsIDs`)
-      .set(currentDocIds)
-      .then(() => {
-        alert("DocID removed successfully.");
-        fetchTermDetails();
-      })
-      .catch((error) => {
-        console.error("Error removing DocID: ", error);
-        alert("Failed to remove DocID.");
-      });
+  if (isEditing) {
+    // Entering edit mode, make cells editable
+    button.innerText = "Save";
+    toggleEditableCells(row, true);
   } else {
-    alert("No DocID found to remove.");
-  }
-}
+    // Attempting to save changes, validate first
+    const updatedDoc = {
+      title: row.cells[0].innerText,
+      url: row.cells[1].innerText,
+      occuranceNumber: parseInt(row.cells[2].innerText, 10)
+    };
 
-async function fetchCurrentDocIds(termId) {
-  const snapshot = await db.ref(`/test/${termId}/DocsIDs`).once("value");
-  if (snapshot.exists()) {
-    return snapshot.val();
-  } else {
-    return [];
-  }
-}
+    const validationError = validateDocInput(updatedDoc.occuranceNumber, updatedDoc.url);
+    if (validationError) {
+      alert(validationError);
+      return; 
+    }
 
-
-document.addEventListener("DOMContentLoaded", function () {
-  const addDocIdButton = document.getElementById("addDocIdButton");
-  if (addDocIdButton) {
-    addDocIdButton.addEventListener("click", addNewDocId);
-  }
-
-  const initialTermInput = document.getElementById("editTerm");
-  if (initialTermInput) {
-    initialTermInput.addEventListener("keyup", function (event) {
-      if (event.key === "Enter") {
-        fetchTermDetails();
-      }
+    saveDocChanges(currentTermId, index, updatedDoc).then(() => {
+      button.innerText = "Edit";
+      toggleEditableCells(row, false);
+    }).catch(error => {
+      console.error("Error saving DocID changes: ", error);
+      alert("Failed to save DocID changes.");
     });
   }
-});
+}
+
+function toggleEditableCells(row, makeEditable) {
+  const cells = row.querySelectorAll("td:not(:last-child)"); // Exclude action cell
+  cells.forEach(cell => {
+    cell.contentEditable = makeEditable;
+  });
+}
+
+function validateDocInput(occurrence, url) {
+  if (!Number.isInteger(occurrence) || occurrence < 1) {
+    return "Occurrences must be a positive integer.";
+  }
+
+  if (!url.startsWith("https://www.nvidia.com/")) {
+    return "URL must start with 'https://www.nvidia.com/'.";
+  }
+
+  return null; // No error, input is valid
+}
+
+async function saveDocChanges(termId, index, updatedDoc) {
+  try {
+    const docsRef = db.ref(`test/${termId}/DocsIDs`);
+    const snapshot = await docsRef.once("value");
+    let currentDocs = snapshot.exists() ? snapshot.val() : [];
+
+    if (currentDocs.length > index) {
+      currentDocs[index] = updatedDoc;
+      await docsRef.set(currentDocs);
+      alert("Changes saved successfully.");   
+      fetchTermDetails();
+    } else {
+      alert("Error: Document to update does not exist.");
+    }
+  } catch (error) {
+    console.error("Error saving DocID changes: ", error);
+    alert("Failed to save DocID changes.");
+  }
+}
+
+async function removeDocId(termId, index) {
+  try {
+    // Fetch current DocsIDs directly within the remove function
+    const docsRef = db.ref(`/test/${termId}/DocsIDs`);
+    const snapshot = await docsRef.once("value");
+
+    if (snapshot.exists()) {
+      let currentDocIds = snapshot.val();
+
+      // Check if the index is valid for the current list of DocIDs
+      if (currentDocIds.length > index) {
+        // Remove the DocID at the specified index
+        currentDocIds.splice(index, 1);
+
+        // Update the database with the new list of DocIDs
+        await docsRef.set(currentDocIds);
+        alert("DocID removed successfully.");
+        fetchTermDetails(); // Refresh the displayed list of DocIDs
+      } else {
+        alert("Invalid DocID index. Unable to remove.");
+      }
+    } else {
+      alert("No DocIDs found for the specified term.");
+    }
+  } catch (error) {
+    console.error("Error removing DocID: ", error);
+    alert("Failed to remove DocID.");
+  }
+}
 
 async function addNewDocId() {
   if (!currentTermId) {
     alert("No term selected for adding a new DocID.");
     return;
   }
-
   const newDocTitle = document.getElementById("newDocTitle").value.trim();
   const newDocURL = document.getElementById("newDocUrl").value.trim();
   const newDocOccurrence = parseInt(
@@ -504,33 +659,37 @@ async function addNewDocId() {
     return;
   }
 
+  const validationError = validateDocInput(newDocOccurrence, newDocURL);
+  if (validationError) {
+    alert(validationError);
+    return;
+  }
+
   const newDoc = {
+    occuranceNumber: newDocOccurrence,
     title: newDocTitle,
     url: newDocURL,
-    occuranceNumber: newDocOccurrence,
   };
-  console.log("Current Term ID:", currentTermId);
-  console.log("New Doc Details:", newDoc);
 
-  const docIds = await fetchCurrentDocIds(currentTermId); // Use currentTermId here
-  docIds.push(newDoc);
+  // Correct reference to fetch current DocsIDs
+  const docsRef = db.ref(`test/${currentTermId}/DocsIDs`);
 
-  await db
-    .ref(`/test/${currentTermId}/DocsIDs`)
-    .set(docIds) // Use currentTermId here
-    .then(() => {
-      alert("DocID added successfully.");
-      fetchTermDetails(); // Refresh to show the newly added DocID
-    })
-    .catch((error) => {
-      console.error("Error adding DocID: ", error);
-      alert("Failed to add DocID.");
-    });
-
-  // Clear input fields after successful addition
-  document.getElementById("newDocTitle").value = "";
-  document.getElementById("newDocUrl").value = "";
-  document.getElementById("newDocOccurrence").value = "";
+  try {
+    // Fetch current DocsIDs
+    const snapshot = await docsRef.once("value");
+    let currentDocs = snapshot.exists() ? snapshot.val() : [];
+    currentDocs.push(newDoc);
+    await docsRef.set(currentDocs);
+    alert("DocID added successfully.");
+    fetchTermDetails();
+    // Clear input fields
+    document.getElementById("newDocTitle").value = "";
+    document.getElementById("newDocUrl").value = "";
+    document.getElementById("newDocOccurrence").value = "";
+  } catch (error) {
+    console.error("Error adding DocID: ", error);
+    alert("Failed to add DocID.");
+  }
 }
 
 /// Chatbot ///
@@ -627,11 +786,160 @@ class Chatbox {
   }
 }
 
-switchPage("searchPage");
-
 const chatbox = new Chatbox();
 chatbox.display();
 
 
 ////////////////////////////edit section/////////////////////////////////////////////
 
+////////////////////////////history login register section/////////////////////////////////////////////
+async function login() {
+  var username = document.getElementById("username1").value;
+  var password = document.getElementById("password").value;
+
+  try {
+    // Reference to the user document in the database based on username
+    const userRef = db.ref("users").orderByChild("userName").equalTo(username);
+    
+    // Fetch the user data
+    userRef.once("value", function(snapshot) {
+      // Check if any user documents exist with the given username
+      if (snapshot.exists()) {
+        // Get the first user document (assuming usernames are unique)
+        const userId = Object.keys(snapshot.val())[0]; // Get the userId of the first matching user
+        const userData = snapshot.child(userId).val();
+        const storedPassword = userData.password;
+        const storedPasswordString = String(storedPassword);
+        const enteredPasswordString = String(password);
+        toggleLinks();
+
+        // Check if the provided password matches the stored password
+        if (enteredPasswordString === storedPasswordString) {
+          // Passwords match, user authentication successful
+          console.log("Login successful. User:", username);
+          document.getElementById("loginForm").reset();
+          localStorage.setItem("username", username);
+          localStorage.setItem("admin", userData.admin);
+          toggleLinks();
+          switchPage("searchPage");
+          // Do something to indicate successful login, such as redirecting the user to another page
+        } else {
+          // Passwords do not match, display an error message
+          console.log("Incorrect password.");
+          document.getElementById("loginMessage").textContent = "Incorrect password.";
+        }
+      } else {
+        // No user found with the given username, display an error message
+        console.log("User not found.");
+        document.getElementById("loginMessage").textContent = "User not found.";
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    // Handle error, such as displaying an error message to the user
+    document.getElementById("loginMessage").textContent = "Error logging in. Please try again later.";
+  }
+}
+
+function toggleLinks() {
+  const username = localStorage.getItem("username");
+
+  var loginLink = document.getElementById("loginLink");
+  var registerLink = document.getElementById("registerLink");
+  var searchLink = document.getElementById("searchLink");
+  var editIndexLink = document.getElementById("editIndexLink");
+  var statisticsLink = document.getElementById("statisticsLink");
+  var logoutLink = document.getElementById("logoutLink");
+
+  if (username !== null) {
+    document.getElementById("welcomeMsg").textContent = "hi "+username;
+    const admin = localStorage.getItem("admin");
+    console.log(admin);
+    // User is logged in
+    console.log("user is logged in as : ",username);
+    loginLink.style.display = "none";
+    registerLink.style.display = "none";
+    searchLink.style.display = "inline";
+    if (admin === "true") {
+      // If admin is true, display editIndexLink
+      editIndexLink.style.display = "inline";
+    } else {
+      // If admin is not true, hide editIndexLink
+      editIndexLink.style.display = "none";
+    }
+    statisticsLink.style.display = "inline";
+    logoutLink.style.display = "inline"; // Show logout link
+  } else {
+    console.log("user is not logged in")
+    // User is logged out
+    loginLink.style.display = "inline";
+    registerLink.style.display = "inline";
+    searchLink.style.display = "none";
+    editIndexLink.style.display = "none";
+    statisticsLink.style.display = "none";
+    logoutLink.style.display = "none"; // Hide logout link
+  }
+}
+
+
+async function register() {
+  var username = document.getElementById("username2").value;
+  var password1 = document.getElementById("password1").value;
+  var password2 = document.getElementById("password2").value;
+
+  try {
+    // Reference to the users collection in the database
+    const usersRef = db.ref("users");
+
+    // Check if the username already exists
+    const snapshot = await usersRef.orderByChild("userName").equalTo(username).once("value");
+    if (snapshot.exists()) {
+      // Handle the case where the username already exists
+      document.getElementById("registerMessage").textContent = "Username already exists.";
+    } 
+    else 
+    {
+      if (password1 !== password2) {
+        document.getElementById("registerMessage").textContent = "Passwords do not match.";
+      } else {
+        // Create the user object with the provided data
+        const newUser = {
+          userName: username,
+          password: password1,
+          admin: false, // Assuming new users are not admins by default
+          history: {search0:""},
+        };
+
+        // Set the user data in the database under the username
+        await usersRef.child(username).set(newUser);
+        window.alert("you are seccessfuly registred");
+        switchPage("login");
+        
+      }
+    }
+  } catch (error) {
+    console.error("Error registering user:", error);
+    // Handle error, such as displaying an error message to the user
+    document.getElementById("registerMessage").textContent = "Error registering user. Please try again later.";
+  }
+}
+
+
+
+function logout()
+{
+  localStorage.removeItem("username");
+  localStorage.removeItem("admin");
+  document.getElementById("welcomeMsg").textContent = "";
+  location.reload();
+}
+
+
+
+window.addEventListener("beforeunload", function(event) {
+  // Perform your action here
+  localStorage.removeItem("username");
+  localStorage.removeItem("admin");
+  // The browser will handle showing a confirmation dialog to the user
+  // with a default message, such as "Changes you made may not be saved."
+});

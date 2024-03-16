@@ -10,6 +10,8 @@
   --border-color: #ddd;
   --dropdown-background-color: #f9f9f9;
   --dropdown-text-color: #333;
+  --error-color: #ff4d4d; /* Error messages in red */
+  --success-color: #4caf50; /* Green for success messages */
 }
 .dark-theme {
   --background-color: #121212;
@@ -280,123 +282,135 @@ body {
 
 /* Styles for the admin page */
 .editIndexPage-container {
-  background-color: var(--navbar-background-color); /* Dark background */
-  color: var(--text-color); /* Light text */
+  background-color: var(--navbar-background-color); /* NVIDIA green background */
+  color: var(--navbar-text-color); /* White text for contrast */
   padding: 20px;
   border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
 .editIndexPage-container input[type="text"],
-.editIndexPage-container textarea {
+.editIndexPage-container input[type="number"] {
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
   border-radius: 5px;
-  border: 1px solid #ddd;
-  background-color: var(--background-color);
+  background-color: var(--container-background-color);
   color: var(--text-color);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inset shadow for depth */
+}
+
+.editIndexPage-container button,
+.docs-table .edit-btn,
+.docs-table .remove-btn {
+  padding: 6px 12px;
+  margin-right: 5px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s; /* Smooth transition for visual feedback */
+  display: inline-block;
 }
 
 .editIndexPage-container button {
-  background-color: var(--button-background-color); /* Nvidia green */
-  color: var(--button-text-color); /* White */
-  border: none;
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  background-color: var(--button-background-color); /* Primary button color */
+  color: var(--button-text-color); /* White text */
 }
 
 .editIndexPage-container button:hover {
-  background-color: #5a8e00; /* Darker green */
+  background-color: darken(var(--button-background-color), 10%); /* Darker on hover */
+  transform: translateY(-2px); /* Lift effect */
 }
 
-.editIndexPage-container .feedback-message {
-  margin-top: 10px;
+h2 {
+  color: var(--button-background-color); /* Utilize the NVIDIA green for heading text */
+  text-align: center; /* Center-align the headings for a balanced look */
+  font-weight: bold; /* Ensure the headings are bold */
+  margin: 20px 0; /* Add some margin for spacing */
+  font-size: 1.5rem; /* Slightly larger font size for emphasis */
+  text-transform: uppercase; /* NVIDIA often uses uppercase text for titles to add a sense of importance and readability */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Add a subtle shadow for a 3D effect, enhancing the futuristic vibe */
 }
 
+.docs-table .edit-btn {
+  background-color: #4CAF50; /* Edit button green */
+  color: white;
+}
+
+.docs-table .remove-btn {
+  background-color: #F44336; /* Remove button red */
+  color: white;
+}
+
+.docs-table .edit-btn:hover,
+.docs-table .remove-btn:hover {
+  opacity: 0.8;
+}
+
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px; /* Space above table */
+}
+
+.docs-table th,
+.docs-table td {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  text-align: left;
+}
+
+.docs-table th {
+  background-color: var(--navbar-background-color);
+  color: var(--navbar-text-color);
+}
+
+.docs-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.docs-table td {
+  background-color: var(--container-background-color);
+  color: var(--text-color);
+  
+}
+
+/* Feedback messages */
 .success, .error {
   font-weight: bold;
   padding: 10px;
   border-radius: 4px;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .success {
-  background-color: var(--button-background-color); /* Success messages in Nvidia green */
+  background-color: var(--success-color); /* Success green */
+  color: white;
 }
 
 .error {
-  background-color: var(--error-color); /* Error messages in bright red for attention */
+  background-color: var(--error-color); /* Error red */
+  color: white;
 }
 
-/* Additional styles for editable DocID URLs */
-.doc-ids-container {
-  background-color: var(--background-color); /* Match the search results background */
-  color: var(--text-color);
-  padding: 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  margin-top: 10px;
-  overflow-y: auto;
-}
-
-.editable-docid {
-  margin: 10px 0;
+/* Editable cell styles */
+.editable[contenteditable="true"] {
+  background-color: #fafafa;
+  border: 1px dashed #ccc;
   padding: 5px;
-  border: 1px dashed var(--border-color); /* Dashed border for editable fields */
-  border-radius: 5px;
-  background-color: var(--container-background-color); /* Slightly different background for focus */
 }
 
-.editable-docid:focus {
-  border: 1px solid var(--link-color); /* Highlight on focus */
-  outline: none; /* Remove default focus outline */
-  background-color: #f5f5f5; /* Lighter background on focus */
-}
-
+/* Enhancing the edit controls */
 .edit-controls {
-  margin: 0 5px; /* Adjust spacing around control buttons */
-  margin-top: 20px;
   display: flex;
-  justify-content: space-around; /* Evenly space the add/remove buttons */
+  justify-content: space-between; /* Space between control buttons */
+  margin-top: 20px;
 }
 
-.btn {
-  background-color: var(--button-background-color);
-  color: var(--button-text-color);
-  transition: background-color 0.2s, transform 0.1s; /* Smoother transitions */
-  /* Other button styles remain unchanged */
-}
-
-.btn:hover {
-  opacity: 0.9; /* Slightly lower opacity for hover effect */
-  background-color: #5a8e00; /* Slightly darker green on hover */
-  transform: scale(1.05); /* Subtle grow effect */
-}
-
-.input-field, .btn {
-  margin-bottom: 15px; /* Consistent spacing */
-}
-
-/* Ensuring text and button colors align with the theme */
-.input-label, #editMessage {
-  color: var(--text-color);
-}
-
-.editIndexPage-container .editable-docid, .doc-ids-container {
-  background-color: var(--background-color); /* Slightly darker for focus */
-  border: 1px solid var(--border-color); /* Defined borders for separation */
-}
-
-.editable-docid:focus, .editable-content:focus, .editable-url:focus {
-  background-color: #333; /* Darker focus state for contrast */
-  color: var(--button-text-color);
-  border-color: var(--link-color); /* Nvidia green border on focus */
-}
 
 /* End admin page styles */
+
 
 
 
@@ -569,7 +583,7 @@ body {
   margin-top: 5em;
 }
 #statsContainer th, #statsContainer td {
-  border: 1px solid #ddd;
+  border: 1px solid #000000;
   padding: 8px;
   text-align: center;
   font-weight: bold;
@@ -579,6 +593,7 @@ body {
   color: black;
 }
 #statsContainer th {
+  background-color: var(--navbar-background-color);
   padding-top: 12px;
   padding-bottom: 12px;
   color: white;
@@ -606,7 +621,6 @@ body {
   font-size: 100%;
   background: #F1F1F1;
 }
-
 
 *, html {
   --primaryGradient: linear-gradient(93.12deg, #5a8e00 0.52%, #76b900 100%);
@@ -794,4 +808,48 @@ body {
   border-bottom-left-radius: 50px;
   box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+}
+
+.left-link {
+  margin-right: auto; /* Set right margin to auto to push it to the left */
+}
+
+
+.form {
+  position: relative;
+  z-index: 1;
+  background: #FFFFFF;
+  max-width: 360px;
+  margin: 0 auto 100px;
+  padding: 45px;
+  text-align: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+.form input {
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.form button {
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  outline: 0;
+  background: #4CAF50;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+.form button:hover,.form button:active,.form button:focus {
+  background: #43A047;
 }

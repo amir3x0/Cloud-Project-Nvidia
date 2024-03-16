@@ -58,7 +58,7 @@ body {
   background-color: var(--navbar-background-color);
   color: var(--navbar-text-color);
   padding: 10px 50px;
-  width: 90.8%;
+  width: 100%;
 }
 .navbar .logo i {
   margin-right: 10px;
@@ -622,10 +622,6 @@ body {
   background: #F1F1F1;
 }
 
-/*
-button-background-color
-#5a8e00
-*/ 
 *, html {
   --primaryGradient: linear-gradient(93.12deg, #5a8e00 0.52%, #76b900 100%);
   --secondaryGradient: linear-gradient(268.91deg, #5a8e00 -2.14%, #76b900 99.69%);

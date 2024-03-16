@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nvidia Search Engine</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
   <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
@@ -30,10 +30,11 @@
 
 <body class="light-theme">
 
-    <div id="content-container">
-        <img class="top-image" id="image" src="https://i.ibb.co/NS2PTxd/salamandra.png" alt="Top Image">
-        <div class="text-logo" align="center" id="text-logo" onclick="switchPage('searchPage')">Salamandra</div>
-    </div>
+  <!-- top image (salamandra) -->
+  <div id="content-container">
+      <img class="top-image" id="image" src="https://i.ibb.co/NS2PTxd/salamandra.png" alt="Top Image">
+      <div class="text-logo" align="center" id="text-logo" onclick="switchPage('searchPage')">Salamandra</div>
+  </div>
 
   <div class="wrapper">
     
@@ -56,12 +57,6 @@
       
       
     </div>
-    <!-- top image (salamandra) -->
-    <div class="container">
-        <img class="top-image" src="/frontend/salamandra.png" alt="Top Image">
-    </div>
-
-
 
     <div id="searchPage" class="search-container active">
       <input type="text" id="searchQuery" class="search-box"
@@ -109,30 +104,23 @@
         <div id="registerMessage"></div> <!-- Message container -->
       </form>
     </div>
-    
-    
-    
-    
-    
-    
 
-
-      <div id="editIndexPage" class="container">
-        <h2>Edit Index</h2>
-        <div class="form-container">
-            <input type="text" id="editTerm" class="input-field" placeholder="Existing term" />
-            <button class="btn" onclick="fetchTermDetails()">Fetch Term Details</button>
-            <div id="editDetails" style="display:none;">
-                <div id="docIdsContainer" class="doc-ids-container"></div>
-                <!-- Updated section for adding a new DocID -->
-                <h2>Add New DocID</h2>
-                <input type="text" id="newDocTitle" class="input-field" placeholder="Enter new DocID title" />
-                <input type="text" id="newDocUrl" class="input-field" placeholder="Enter new DocID URL" />
-                <input type="number" id="newDocOccurrence" class="input-field" placeholder="Enter new DocID occurrence number" />
-                <button id="addDocIdButton" class="btn" onclick="addNewDocId()">+ Add DocID</button>
-            </div>
-        </div>
-        <h2 id="editMessage"></h2>
+    <div id="editIndexPage" class="container">
+      <h2>Edit Index</h2>
+      <div class="form-container">
+          <input type="text" id="editTerm" class="input-field" placeholder="Existing term" />
+          <button class="btn" onclick="fetchTermDetails()">Fetch Term Details</button>
+          <div id="editDetails" style="display:none;">
+              <div id="docIdsContainer" class="doc-ids-container"></div>
+              <!-- Updated section for adding a new DocID -->
+              <h2>Add New DocID</h2>
+              <input type="text" id="newDocTitle" class="input-field" placeholder="Enter new DocID title" />
+              <input type="text" id="newDocUrl" class="input-field" placeholder="Enter new DocID URL" />
+              <input type="number" id="newDocOccurrence" class="input-field" placeholder="Enter new DocID occurrence number" />
+              <button id="addDocIdButton" class="btn" onclick="addNewDocId()">+ Add DocID</button>
+          </div>
+      </div>
+      <h2 id="editMessage"></h2>
     </div>
 
 
@@ -165,6 +153,33 @@
         </button>
       </div>
     </div>
+
+    <div class="chatbox">
+      <div class="chatbox__support">
+          <div class="chatbox__header">
+              <div class="chatbox__image--header">
+                  <img src="https://img.icons8.com/color/48/000000/circled-user-female-skin-type-5--v1.png" alt="image">
+              </div>
+              <div class="chatbox__content--header">
+                  <h4 class="chatbox__heading--header">Chat support</h4>
+                  <p class="chatbox__description--header">Hi. My name is NvidiaBot. Please write a topic you would like to know more about</p>
+              </div>
+          </div>
+          <div class="chatbox__messages">
+              <div></div>
+          </div>
+          <div class="chatbox__footer">
+              <input type="text" placeholder="Write a message...">
+              <button class="chatbox__send--footer send__button">Send</button>
+          </div>
+      </div>
+      <div class="chatbox__button">
+          <button>
+            <img src="https://i.ibb.co/nDxy1tt/icons8-chat-50.png" alt="icons8-chat-50" border="0"/>
+          </button>
+      </div>
+    </div>
+
   </div>
 
   <script>

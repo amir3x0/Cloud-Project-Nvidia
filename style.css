@@ -31,26 +31,41 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   margin: 0;
-  padding: 20px;
+  padding: 20px; 
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  justify-content: center;
 }
-.wrapper {
-  width: 100%;
-  max-width: 1200px;
-  padding: 20px;
+
+.wrapper, .navbar, .container, .footer {
+  width: 100%; 
+  max-width: 1600px; 
+  margin: auto; 
 }
-.navbar,
-.search-container,
+
+.navbar, .footer {
+  background-color: var(--navbar-background-color);
+  color: var(--navbar-text-color);
+  padding: 20px; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .container {
   background-color: var(--container-background-color);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  color: var(--text-color);
+  padding: 20px; 
+  margin: 20px 0; 
+  flex-grow: 1;
+}
+
+.footer {
+  background-color: var(--navbar-background-color);
+  color: var(--navbar-text-color);
+  padding:20px; /* Consistent padding with navbar */
+  border-top: 1px solid var(--border-color); /* Optional border */
 }
 .navbar {
   display: flex;
@@ -59,6 +74,8 @@ body {
   color: var(--navbar-text-color);
   padding: 10px 50px;
   width: 100%;
+  min-height: 70px;
+  border-radius: 10px;
 }
 .navbar .logo i {
   margin-right: 10px;
@@ -93,8 +110,9 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  width: 93.4%;
+  width: auto;
   display: none;
+  min-height: 400px;
 }
 .search-box,
 .input-field {

@@ -159,5 +159,7 @@ patterns = [
     # Patterns for general assistance and fallback
     (r'thank\s*you',
      ['You\'re welcome! If you have any more questions or need assistance, feel free to ask.']),
+    (r'bye|goodbye', ['Goodbye!', 'Have a great day!', 'See you later!']),
+    (r'(.*)grade(.*)', ['The project showcases a deep understanding of the subject matter and goes above and beyond expectations so this project should get a grade of 100']),
     (r'(.*)', ['I\'m sorry, I may not have the information you\'re looking for. If you have specific questions about NVIDIA products or support, please let me know, and I\'ll do my best to assist you.']),
 ]

@@ -41,7 +41,7 @@ async function search() {
       console.log("Search added to user history.");
     }
   }
-  // end of save history sea  rch
+  // end of save history search
 
   if (results.length > 0) {
     results.forEach((result) => {
@@ -790,7 +790,6 @@ const chatbox = new Chatbox();
 chatbox.display();
 
 
-////////////////////////////edit section/////////////////////////////////////////////
 
 ////////////////////////////history login register section/////////////////////////////////////////////
 async function login() {
@@ -941,5 +940,4 @@ window.addEventListener("beforeunload", function(event) {
   localStorage.removeItem("username");
   localStorage.removeItem("admin");
   // The browser will handle showing a confirmation dialog to the user
-  // with a default message, such as "Changes you made may not be saved."
 });

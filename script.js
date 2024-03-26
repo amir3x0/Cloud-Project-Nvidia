@@ -930,7 +930,8 @@ function logout()
   localStorage.removeItem("username");
   localStorage.removeItem("admin");
   document.getElementById("welcomeMsg").textContent = "";
-  location.reload();
+
+  toggleLinks();
 }
 
 

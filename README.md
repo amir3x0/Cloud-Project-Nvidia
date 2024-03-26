@@ -2,5 +2,8 @@
 "# Cloud-Project-Nvidia" 
 
 
-Promotion video Link:\n
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/gcYySEuRwdo/0.jpg)](https://www.youtube.com/watch?v=gcYySEuRwdo)
+Promotion video Link:
+
+
+https://github.com/amir3x0/Cloud-Project-Nvidia/assets/128545450/ebfa2e60-938d-4375-aeb4-7bc852cbc40f
+

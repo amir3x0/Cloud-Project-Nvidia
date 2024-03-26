@@ -851,7 +851,7 @@ function toggleLinks() {
   var logoutLink = document.getElementById("logoutLink");
 
   if (username !== null) {
-    document.getElementById("welcomeMsg").textContent = "hi "+username;
+    document.getElementById("welcomeMsg").textContent = "Hi "+username;
     const admin = localStorage.getItem("admin");
     console.log(admin);
     // User is logged in

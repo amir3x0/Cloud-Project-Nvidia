@@ -102,6 +102,7 @@ body {
   margin-left: 20px;
   cursor: pointer;
 }
+
 .search-container,
 .container {
   text-align: center;
@@ -426,11 +427,7 @@ h2 {
   margin-top: 20px;
 }
 
-
 /* End admin page styles */
-
-
-
 
 
 /* Styles for the footer */
@@ -651,9 +648,10 @@ body {
 /* CHATBOX
 =============== */
 .chatbox {
-  position: absolute;
-  bottom: 30px;
-  right: 30px;
+  position: fixed; /* Keep the button in a fixed position */
+  bottom: 50px; /* Align bottom edge to the bottom of the viewport */
+  right: 10px; /* Align right edge to the right of the viewport */
+  z-index: 1000; /* Ensure it appears above other content */
 }
 
 /* CONTENT IS CLOSE */
@@ -676,9 +674,13 @@ body {
 
 }
 
-/* BUTTON */
+/* Updated BUTTON style for fixed positioning at the bottom right */
 .chatbox__button {
-  text-align: right;
+  position: fixed; /* Keep the button in a fixed position */
+  bottom: 0; /* Align bottom edge to the bottom of the viewport */
+  right: 0; /* Align right edge to the right of the viewport */
+  z-index: 1000; /* Ensure it appears above other content */
+  margin: 10px;
 }
 
 .send__button {
@@ -858,7 +860,7 @@ body {
   font-family: "Roboto", sans-serif;
   text-transform: uppercase;
   outline: 0;
-  background: #4CAF50;
+  background: var(--button-background-color);
   width: 100%;
   border: 0;
   padding: 15px;
@@ -869,5 +871,5 @@ body {
   cursor: pointer;
 }
 .form button:hover,.form button:active,.form button:focus {
-  background: #43A047;
+  background: #5a8e00;;
 }

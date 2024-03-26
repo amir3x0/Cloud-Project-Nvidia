@@ -130,7 +130,7 @@ function switchPage(pageId) {
     activePage.classList.add("fade-in");
   }, 10);
 }
-
+logout();
 switchPage("login");  
 
 function clearSearch() {
@@ -932,7 +932,6 @@ function logout()
   document.getElementById("welcomeMsg").textContent = "";
   toggleLinks();
   switchPage("login");
-  document.getElementById("pagination").innerHTML = ""; // Clear pagination if no results
 }
 
 

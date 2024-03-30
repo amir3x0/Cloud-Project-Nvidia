@@ -9,6 +9,11 @@ const chatbox = new Chatbox();
 chatbox.display();
 
 toggleLinks(); // need to toggle the links base on if user uis logged in or not
+
+logout();
+switchPage("login");  
+
+
 // Function to get the query and call search in db.
 async function search() {
   currentPage = 1; // Reset to first page for every new search
@@ -133,8 +138,6 @@ function switchPage(pageId) {
     activePage.classList.add("fade-in");
   }, 10);
 }
-logout();
-switchPage("login");  
 
 function clearSearch() {
   document.getElementById("searchQuery").value = "";
@@ -721,7 +724,8 @@ class Chatbox {
       this.args = {
           openButton: document.querySelector('.chatbox__button'),
           chatBox: document.querySelector('.chatbox__support'),
-          sendButton: document.querySelector('.send__button')
+          sendButton: document.querySelector('.send__button'),
+          logoutButton: document.querySelector('logoutLink')
       }
 
       this.state = false;
@@ -734,6 +738,8 @@ class Chatbox {
       openButton.addEventListener('click', () => this.toggleState(chatBox))
 
       sendButton.addEventListener('click', () => this.onSendButton(chatBox))
+
+      logoutButton.addEventListener('click', () => this.onLogoutButton(chatBox))
 
       const node = chatBox.querySelector('input');
       node.addEventListener("keyup", ({key}) => {
@@ -769,6 +775,10 @@ class Chatbox {
       this.messages.push(msg2);
       this.updateChatText(chatbox)
       textField.value = ''
+  }
+
+  onLogoutButton() {
+    this.messages = []
   }
 
   updateChatText(chatbox) {
@@ -925,7 +935,6 @@ async function register() {
 
 function logout()
 {
-  if (typeof chatbox !== 'undefined') { chatbox.messages = []; }
   localStorage.removeItem("username");
   localStorage.removeItem("admin");
   document.getElementById("welcomeMsg").textContent = "";

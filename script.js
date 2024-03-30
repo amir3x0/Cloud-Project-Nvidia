@@ -721,6 +721,7 @@ class Chatbox {
           sendButton: document.querySelector('.send__button'),
           logoutButton: document.querySelector('#logoutLink')
       }
+      console.log(document.querySelector('#logoutLink'))
       this.state = false;
       this.messages = [];
   }

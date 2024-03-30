@@ -721,11 +721,6 @@ class Chatbox {
           sendButton: document.querySelector('.send__button'),
           logoutButton: document.querySelector('#logoutLink')
       }
-      if (document.querySelector('#logoutLink')) {
-        console.log("element found")
-      } else {
-        console.log("element not found")
-      }
       
       this.state = false;
       this.messages = [];

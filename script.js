@@ -727,13 +727,13 @@ class Chatbox {
   }
 
   display() {
-      const {openButton, chatBox, sendButton} = this.args;
+      const {openButton, chatBox, sendButton, logoutButton} = this.args;
 
       openButton.addEventListener('click', () => this.toggleState(chatBox))
 
       sendButton.addEventListener('click', () => this.onSendButton(chatBox))
 
-      logoutButton.addEventListener('click', () => this.onLogoutButton(chatBox))
+      logoutButton.addEventListener('click', () => this.onLogoutButton())
 
       const node = chatBox.querySelector('input');
       node.addEventListener("keyup", ({key}) => {

@@ -5,6 +5,9 @@ let linksPerPage = 5; // Default links per page
 let allMatchingLinks = []; // Moved to a global scope
 let currentTermId = null; // This will hold the ID of the currently edited term
 
+const chatbox = new Chatbox();
+chatbox.display();
+
 toggleLinks(); // need to toggle the links base on if user uis logged in or not
 // Function to get the query and call search in db.
 async function search() {
@@ -785,11 +788,6 @@ class Chatbox {
       chatmessage.innerHTML = html;
   }
 }
-
-const chatbox = new Chatbox();
-chatbox.display();
-
-
 
 ////////////////////////////history login register section/////////////////////////////////////////////
 async function login() {

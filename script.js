@@ -786,7 +786,7 @@ class Chatbox {
   }
 }
 
-var chatbox = new Chatbox();
+const chatbox = new Chatbox();
 chatbox.display();
 
 

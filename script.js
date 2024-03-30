@@ -927,7 +927,7 @@ async function register() {
 
 function logout()
 {
-  chatbox.messages = [];
+  if (typeof chatbox !== 'undefined') { chatbox.messages = []; }
   localStorage.removeItem("username");
   localStorage.removeItem("admin");
   document.getElementById("welcomeMsg").textContent = "";

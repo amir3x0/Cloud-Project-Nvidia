@@ -738,7 +738,7 @@ class Chatbox {
 
       sendButton.addEventListener('click', () => this.onSendButton(chatBox))
 
-      logoutButton.addEventListener('click', () => this.onLogoutButton())
+      logoutButton.addEventListener('click', () => this.onLogoutButton(chatBox))
 
       const node = chatBox.querySelector('input');
       node.addEventListener("keyup", ({key}) => {
@@ -776,8 +776,9 @@ class Chatbox {
       textField.value = ''
   }
 
-  onLogoutButton() {
+  onLogoutButton(chatbox) {
     this.messages = []
+    this.updateChatText(chatbox)
   }
 
   updateChatText(chatbox) {

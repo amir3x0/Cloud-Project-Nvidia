@@ -786,7 +786,7 @@ class Chatbox {
   }
 }
 
-const chatbox = new Chatbox();
+var chatbox = new Chatbox();
 chatbox.display();
 
 
@@ -927,6 +927,7 @@ async function register() {
 
 function logout()
 {
+  chatbox.messages = [];
   localStorage.removeItem("username");
   localStorage.removeItem("admin");
   document.getElementById("welcomeMsg").textContent = "";
